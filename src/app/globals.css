@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
+/* Палитра: нежный пастельный розовый + кремовый */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --pink: #f9c5d5;
+  --pink-soft: #fde4ec;
+  --pink-deep: #e88aa8;
+  --rose-ink: #7a3b52; /* основной цвет текста — тёмная роза, хорошо читается на розовом */
+  --cream: #fff8f0;
+  --cream-deep: #f6e7d6;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-pink: var(--pink);
+  --color-pink-soft: var(--pink-soft);
+  --color-pink-deep: var(--pink-deep);
+  --color-rose-ink: var(--rose-ink);
+  --color-cream: var(--cream);
+  --color-cream-deep: var(--cream-deep);
+  --font-sans: "Nunito Variable", system-ui, sans-serif;
+  --font-display: "Comfortaa", "Nunito Variable", system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--cream);
+  color: var(--rose-ink);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* Мягкий фон с розовыми пятнами для формы друзей */
+.bg-dreamy {
+  background:
+    radial-gradient(circle at 15% 10%, var(--pink-soft) 0, transparent 45%),
+    radial-gradient(circle at 90% 30%, #ffe9f1 0, transparent 40%),
+    radial-gradient(circle at 30% 95%, var(--pink-soft) 0, transparent 45%),
+    var(--cream);
 }
