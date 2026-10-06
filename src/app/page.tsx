@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { copy } from "@/content/copy";
 import { ParticleName } from "@/components/acts/ParticleName";
 import { unlockAudio } from "@/lib/sound";
-import { DemoBadge } from "@/components/acts/DemoBadge";
 
 const t = copy.portal;
 
@@ -24,7 +23,6 @@ export default function Portal() {
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-[radial-gradient(ellipse_at_50%_40%,#3a1f30_0%,#1f1019_55%,#140a10_100%)]">
-      <DemoBadge />
       <ParticleName text={t.name} onFormed={() => setFormed(true)} />
 
       <AnimatePresence>

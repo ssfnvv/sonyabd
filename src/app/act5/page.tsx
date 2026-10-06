@@ -15,9 +15,11 @@ import { copy } from "@/content/copy";
 import { shuffle } from "@/lib/mix";
 import { assetUrl, ASSETS } from "@/content/assets";
 import { ActShell } from "@/components/acts/ActShell";
+import { Doodles } from "@/components/acts/Doodles";
+import { PeekCat } from "@/components/acts/PeekCat";
+
 import { RansomText, hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
-import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act5;
 const MAX_PER_ROUND = 12; // чтобы викторина не растянулась, берём до 12 вопросов в раунде
@@ -60,9 +62,8 @@ export default function Act5() {
 
   useEffect(() => {
     (async () => {
-      const demo = isDemo();
       try {
-        const data = demo ? DEMO : await fetch("/api/public/quiz").then((r) => (r.ok ? r.json() : null));
+        const data = await fetch("/api/public/quiz").then((r) => (r.ok ? r.json() : null));
         const list = data ? buildQuestions(data) : [];
         setQs(list);
         if (!list.length) setStage({ kind: "score" });
@@ -109,6 +110,12 @@ export default function Act5() {
 
   return (
     <ActShell back="/act4" className="scrap-desk">
+      <Doodles seed="act5" count={12} kinds={["question", "star", "crown", "sparkle", "bolt", "smile"]} />
+      {/* котики реагируют на ответ */}
+      {q && picked && picked === q.answer && <PeekCat key={`yes${q.id}`} cat="cat-wink" edge="bottom-right" size={125} delay={0.2} />}
+      {q && picked && picked !== q.answer && <PeekCat key={`no${q.id}`} cat="cat-shock" edge="bottom-left" size={125} delay={0.2} />}
+      {stage.kind === "score" && <PeekCat cat="cat-calico" edge="bottom-right" size={130} delay={0.8} />}
+      {stage.kind === "score" && <PeekCat cat="cat-kitten-cupcake" edge="left" top="18%" size={100} delay={1.4} />}
       <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-5 pb-12 pt-20">
         {qs === null && <div className="size-10 animate-spin rounded-full border-4 border-pink border-t-pink-deep" />}
 
@@ -267,14 +274,3 @@ export default function Act5() {
     </ActShell>
   );
 }
-
-// Демо-данные: подложки, чтобы посмотреть оформление
-const d = copy.demo;
-const DEMO = {
-  names: [0, 1, 2, 3, 4].map(demoName),
-  round1: [
-    { id: "d1", text: d.fact, answer: demoName(0) },
-    { id: "d2", text: d.fact, answer: demoName(1) },
-  ],
-  round2: [{ id: "d3", text: d.question, answer: `${d.answer} 1`, wrong: [`${d.answer} 2`, `${d.answer} 3`, `${d.answer} 4`] }],
-};

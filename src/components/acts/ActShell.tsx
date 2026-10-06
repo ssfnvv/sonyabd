@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { copy } from "@/content/copy";
 import { cn } from "../ui";
-import { DemoBadge } from "./DemoBadge";
 
 export function ActShell({
   back,
@@ -22,7 +21,6 @@ export function ActShell({
 }) {
   return (
     <main className={cn("relative min-h-dvh overflow-hidden", className)}>
-      <DemoBadge />
       {back && (
         <Link
           href={back}
@@ -35,7 +33,7 @@ export function ActShell({
           <ArrowLeft className="size-5" />
         </Link>
       )}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
+      <motion.div className="relative z-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
         {children}
       </motion.div>
     </main>

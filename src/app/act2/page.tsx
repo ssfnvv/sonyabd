@@ -11,9 +11,11 @@ import { CARD_ASPECT, type CardElement } from "@/lib/media";
 import { assetsByGroup, assetUrl } from "@/content/assets";
 import { CardLayer } from "@/components/CardView";
 import { ActShell } from "@/components/acts/ActShell";
+import { Doodles } from "@/components/acts/Doodles";
+import { PeekCat } from "@/components/acts/PeekCat";
+
 import { RansomText, hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
-import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act2;
 
@@ -44,11 +46,6 @@ export default function Act2() {
   const [cards, setCards] = useState<Card[] | null>(null);
 
   useEffect(() => {
-    // /act2?demo — показать пример с картинками-заглушками, пока друзья не загрузили своё
-    if (isDemo()) {
-      setCards(demoCards());
-      return;
-    }
     fetch("/api/public/timeline")
       .then((r) => (r.ok ? r.json() : []))
       .then(setCards)
@@ -72,6 +69,8 @@ export default function Act2() {
 
   return (
     <ActShell back="/act1" className="scrap-desk">
+      <Doodles seed="act2" count={14} kinds={["heart", "star", "sparkle", "swirl", "flower", "arrow", "smile", "cloud"]} />
+      <PeekCat cat="cat-glasses" edge="bottom-right" size={115} delay={2} />
       <div className="mx-auto flex max-w-md flex-col items-center px-5 pb-24 pt-20">
         {t.title && (
           <h1 className="mb-10 text-center">
@@ -223,38 +222,4 @@ export default function Act2() {
       </div>
     </ActShell>
   );
-}
-
-
-// ---------- демо-режим ----------
-// Заглушка вместо фото: мягкий градиент
-const DEMO_PHOTOS = [
-  ["#f9c5d5", "#fff3e3"],
-  ["#cfe0f5", "#fde4ec"],
-  ["#f6cf7a", "#f7a8c0"],
-  ["#bfe3d0", "#fff8f0"],
-].map(
-  ([a, b]) =>
-    "data:image/svg+xml," +
-    encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="300" cy="90" r="40" fill="#fff" opacity=".6"/></svg>`,
-    ),
-);
-
-function demoCards(): Card[] {
-  const frames = assetsByGroup("frame");
-  // сверху карточку «прикалывают» только невысокие предметы: зажимы, бантики, скотч
-  const clips = assetsByGroup("clip").filter((a) => a.h / a.w < 1.05);
-  const cats = assetsByGroup("cat");
-  const years = [2009, 2014, 2014, 2019, 2023, 2025];
-  return years.map((year, i) => {
-    const f = frames[i % Math.max(1, frames.length)];
-    const els: CardElement[] = [];
-    if (f) els.push({ id: `f${i}`, kind: "frame", src: f.id, photo: DEMO_PHOTOS[i % 4], x: 0.5, y: 0.42, scale: 1.35, rotation: -4 + i * 2, z: 1 });
-    if (clips[i]) els.push({ id: `c${i}`, kind: "asset", src: clips[(i * 5) % clips.length].id, x: 0.22, y: 0.82, scale: 1.2, rotation: 12, z: 2 });
-    if (i % 2 === 0) els.push({ id: `s${i}`, kind: "sticker", src: ["heart", "star", "bow"][i % 3], x: 0.8, y: 0.85, scale: 1, rotation: -10, z: 3 });
-    if (i === 3 && cats[0]) els.push({ id: `k${i}`, kind: "asset", src: cats[2 % cats.length].id, x: 0.75, y: 0.78, scale: 1, rotation: 6, z: 4 });
-    // в демо вместо историй — заглушка, настоящие тексты пишут друзья
-    return { id: `demo-${i}`, year, story: copy.demo.story, elements: els, name: demoName(i) };
-  });
 }

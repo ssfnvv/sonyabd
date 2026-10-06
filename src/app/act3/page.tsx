@@ -11,12 +11,14 @@ import "@fontsource/caveat/cyrillic-700.css";
 import "@fontsource/caveat/latin-700.css";
 import { copy } from "@/content/copy";
 import { loadClips, mixPeaks, MixPlayer, shuffle, type MixClip, type RawClip } from "@/lib/mix";
-import { getAudioContext, unlockAudio } from "@/lib/sound";
+import { unlockAudio } from "@/lib/sound";
 import { assetUrl, ASSETS } from "@/content/assets";
 import { ActShell } from "@/components/acts/ActShell";
+import { Doodles } from "@/components/acts/Doodles";
+import { PeekCat } from "@/components/acts/PeekCat";
+
 import { Cassette } from "@/components/acts/Cassette";
 import { cn, fmtTime } from "@/components/ui";
-import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act3;
 const BARS = 56;
@@ -35,11 +37,6 @@ export default function Act3() {
     let cancelled = false;
     (async () => {
       let raw: RawClip[];
-      if (isDemo()) {
-        const c = await demoClips();
-        if (!cancelled) setClips(c);
-        return;
-      }
       try {
         raw = await fetch("/api/public/audios?type=diary").then((r) => (r.ok ? r.json() : []));
       } catch {
@@ -120,6 +117,9 @@ export default function Act3() {
 
   return (
     <ActShell back="/act2" className="scrap-desk">
+      <Doodles seed="act3" count={12} kinds={["note", "heart", "sparkle", "squiggle", "star"]} />
+      <PeekCat cat="cat-glasses" edge="right" top="30%" size={115} delay={1.2} />
+      <PeekCat cat="cat-lick" edge="bottom-left" size={120} delay={2} />
       <div className="mx-auto flex max-w-md flex-col items-center gap-7 px-5 pb-20 pt-20">
         {/* кассета */}
         <motion.div
@@ -236,26 +236,4 @@ export default function Act3() {
       </div>
     </ActShell>
   );
-}
-
-// ---------- демо: синтезированные «голоса» вместо настоящих записей ----------
-async function demoClips(): Promise<MixClip[]> {
-  const ctx = getAudioContext();
-  const out: MixClip[] = [];
-  let start = 0;
-  for (let i = 0; i < 5; i++) {
-    const dur = 4 + i;
-    const b = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
-    const d = b.getChannelData(0);
-    const f = 180 + i * 40;
-    for (let k = 0; k < d.length; k++) {
-      const tt = k / ctx.sampleRate;
-      // «слоги»: тон с огибающей, похожей на речь
-      const env = Math.max(0, Math.sin(tt * Math.PI * (2.2 + i * 0.3))) * (0.6 + 0.4 * Math.sin(tt * 1.3));
-      d[k] = Math.sin(2 * Math.PI * f * tt) * env * 0.25;
-    }
-    out.push({ id: `demo${i}`, name: demoName(i), start, dur, buffer: b });
-    start += dur + 0.9;
-  }
-  return out;
 }

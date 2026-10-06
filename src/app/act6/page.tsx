@@ -17,8 +17,10 @@ import { shuffle } from "@/lib/mix";
 import { unlockAudio } from "@/lib/sound";
 import { ActShell } from "@/components/acts/ActShell";
 import { Jar } from "@/components/acts/Jar";
+import { Doodles } from "@/components/acts/Doodles";
+import { PeekCat } from "@/components/acts/PeekCat";
+
 import { RansomText, hash } from "@/components/acts/RansomText";
-import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act6;
 type Video = { id: string; path: string; mime: string; name: string };
@@ -31,20 +33,15 @@ export default function Act6() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [preds, setPreds] = useState<Prediction[]>([]);
   const [stage, setStage] = useState<Stage>("loading");
-  const demo = useRef(false);
 
   useEffect(() => {
-    demo.current = isDemo();
     (async () => {
       let data: { videos: Video[]; predictions: Prediction[] } = { videos: [], predictions: [] };
-      if (demo.current) data = DEMO;
-      else {
-        try {
-          const r = await fetch("/api/public/final");
-          if (r.ok) data = await r.json();
-        } catch {
-          /* покажем то, что есть */
-        }
+      try {
+        const r = await fetch("/api/public/final");
+        if (r.ok) data = await r.json();
+      } catch {
+        /* покажем то, что есть */
       }
       setVideos(shuffle(data.videos));
       setPreds(shuffle(data.predictions));
@@ -202,7 +199,7 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
 }
 
 function srcOf(v: Video) {
-  return /^(data:|https?:|\/)/.test(v.path) ? v.path : mediaUrl(v.path);
+  return mediaUrl(v.path);
 }
 
 // ---------- баночка с предсказаниями ----------
@@ -231,6 +228,9 @@ function JarStage({ preds, onEmpty }: { preds: Prediction[]; onEmpty: () => void
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-8 pb-10 pt-20">
+      <Doodles seed="act6-jar" count={12} kinds={["heart", "sparkle", "flower", "cloud", "star", "swirl"]} />
+      <PeekCat cat="cat-cupcake" edge="bottom-left" size={120} delay={1} />
+      <PeekCat cat="cat-kitten-cupcake" edge="right" top="22%" size={105} delay={1.6} />
       <motion.button
         onClick={pull}
         aria-label="jar"
@@ -296,8 +296,13 @@ function Ending() {
 
   const words = t.ending.split(" ");
   return (
-    <div className="grid min-h-dvh place-items-center bg-[radial-gradient(circle_at_50%_35%,#ffffff_0%,#fde4ec_45%,#f9c5d5_100%)] px-7">
-      <p className="text-balance text-center font-display text-[2rem] font-bold leading-snug text-rose-ink">
+    <div className="relative grid min-h-dvh place-items-center bg-[radial-gradient(circle_at_50%_35%,#ffffff_0%,#fde4ec_45%,#f9c5d5_100%)] px-7">
+      <Doodles seed="act6-end" count={14} kinds={["heart", "star", "sparkle", "crown", "flower", "smile"]} />
+      <PeekCat cat="cat-cake" edge="bottom-left" size={130} delay={2.5} />
+      <PeekCat cat="cat-kitten-cake" edge="bottom-right" size={130} delay={3} />
+      <PeekCat cat="cat-clown" edge="left" top="12%" size={105} delay={3.6} />
+      <PeekCat cat="cat-tongue" edge="right" top="16%" size={105} delay={4.1} />
+      <p className="relative z-10 text-balance text-center font-display text-[2rem] font-bold leading-snug text-rose-ink">
         {words.map((w, i) => (
           <span key={i}>
             <motion.span
@@ -314,17 +319,3 @@ function Ending() {
     </div>
   );
 }
-
-// ---------- демо ----------
-const DEMO = {
-  // демо-ролики: цветные градиенты с тоном вместо настоящих поздравлений
-  videos: [
-    { id: "v1", path: "/demo/f9c5d5.mp4", mime: "video/mp4", name: demoName(0) },
-    { id: "v2", path: "/demo/f6cf7a.mp4", mime: "video/mp4", name: demoName(1) },
-  ] as Video[],
-  predictions: [
-    { id: "p1", text: `${copy.demo.prediction} 1`, name: demoName(0) },
-    { id: "p2", text: `${copy.demo.prediction} 2`, name: demoName(1) },
-    { id: "p3", text: `${copy.demo.prediction} 3`, name: demoName(2) },
-  ],
-};

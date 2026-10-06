@@ -12,12 +12,14 @@ import "@fontsource/caveat/cyrillic-700.css";
 import "@fontsource/caveat/latin-700.css";
 import { copy } from "@/content/copy";
 import { loadClips, shuffle, type MixClip, type RawClip } from "@/lib/mix";
-import { getAudioContext, playBuffer, playClick, playRing, unlockAudio } from "@/lib/sound";
+import { playBuffer, playClick, playRing, unlockAudio } from "@/lib/sound";
 import { ActShell } from "@/components/acts/ActShell";
+import { Doodles } from "@/components/acts/Doodles";
+import { PeekCat } from "@/components/acts/PeekCat";
+
 import { RotaryPhone } from "@/components/acts/RotaryPhone";
 import { hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
-import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act4;
 type Phase = "loading" | "ringing" | "talking" | "between" | "conference" | "done";
@@ -47,8 +49,7 @@ export default function Act4() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const demo = isDemo();
-      const [c, f] = demo ? [demoClips(3, 5), demoClips(5, 2)] : await Promise.all([fetchClips("call"), fetchClips("final")]);
+      const [c, f] = await Promise.all([fetchClips("call"), fetchClips("final")]);
       if (cancelled) return;
       setCalls(c);
       setFinals(f);
@@ -125,6 +126,12 @@ export default function Act4() {
 
   return (
     <ActShell back="/act3" className="scrap-desk">
+      <Doodles seed="act4" count={11} kinds={["ring", "heart", "bolt", "star", "squiggle", "sparkle"]} />
+      {/* котик пугается звонка */}
+      {phase === "ringing" && <PeekCat key={`shock${idx}`} cat="cat-shock" edge="right" top="34%" size={110} delay={0.4} />}
+      {phase === "talking" && <PeekCat key={`listen${idx}`} cat="cat-wink" edge="left" top="30%" size={105} delay={0.6} />}
+      {inConference && <PeekCat cat="cat-orange" edge="bottom-left" size={120} delay={0.8} />}
+      {inConference && <PeekCat cat="cat-tongue" edge="bottom-right" size={120} delay={1.3} />}
       <div className="relative mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-6 px-5 pb-16 pt-20">
         {phase === "loading" && <div className="size-10 animate-spin rounded-full border-4 border-pink border-t-pink-deep" />}
 
@@ -271,19 +278,4 @@ function RunawayButton({ seed }: { seed: string }) {
       <PhoneOff className="size-6" />
     </motion.button>
   );
-}
-
-// ---------- демо: синтезированные «голоса» ----------
-function demoClips(n: number, sec: number): MixClip[] {
-  const ctx = getAudioContext();
-  return Array.from({ length: n }, (_, i) => {
-    const b = ctx.createBuffer(1, Math.floor(ctx.sampleRate * sec), ctx.sampleRate);
-    const d = b.getChannelData(0);
-    const f = 170 + i * 35;
-    for (let k = 0; k < d.length; k++) {
-      const tt = k / ctx.sampleRate;
-      d[k] = Math.sin(2 * Math.PI * f * tt) * Math.max(0, Math.sin(tt * Math.PI * 2.4)) * 0.22;
-    }
-    return { id: `demo${n}-${i}`, name: demoName(i), start: 0, dur: sec, buffer: b };
-  });
 }

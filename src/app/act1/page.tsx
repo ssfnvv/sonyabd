@@ -11,6 +11,9 @@ import { copy } from "@/content/copy";
 import { getTarget } from "@/lib/birthday";
 import { playDing, unlockAudio } from "@/lib/sound";
 import { ActShell } from "@/components/acts/ActShell";
+import { Doodles } from "@/components/acts/Doodles";
+import { PeekCat } from "@/components/acts/PeekCat";
+
 
 const t = copy.act1;
 const PINKS = ["#f9c5d5", "#e88aa8", "#d9628a", "#fde4ec", "#fff3e3", "#f6cf7a", "#ffffff"];
@@ -75,6 +78,17 @@ export default function Act1() {
         transition={{ duration: 1.2, ease: "easeOut" }}
       />
 
+      {/* ночью — светлые звёздочки, после полуночи — цветные дудлы и котики в колпаках */}
+      {!celebrating ? (
+        <Doodles seed="act1-night" count={9} kinds={["star", "sparkle", "dots", "cloud"]} light />
+      ) : (
+        <>
+          <Doodles seed="act1-party" count={12} kinds={["heart", "star", "sparkle", "crown", "swirl", "smile"]} />
+          <PeekCat cat="cat-kitten-cake" edge="bottom-left" size={130} delay={1.2} />
+          <PeekCat cat="cat-cake" edge="bottom-right" size={130} delay={1.6} />
+          <PeekCat cat="cat-clown" edge="left" top="16%" size={110} delay={2.2} />
+        </>
+      )}
       <div className="relative z-10 mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-10 px-6 text-center">
         <AnimatePresence mode="wait">
           {!celebrating ? (
