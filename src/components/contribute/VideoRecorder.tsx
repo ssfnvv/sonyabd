@@ -139,6 +139,10 @@ export function VideoRecorder({ friend, onBack, onDone }: { friend: Friend; onBa
         )}
       </div>
 
+      {/* служебная строка: видна только если запись оборвалась слишком рано */}
+      {rec.state === "done" && rec.seconds < 2 && rec.debug && (
+        <p className="break-all text-[10px] leading-tight text-rose-ink/50">{rec.debug}</p>
+      )}
       {rec.error === "denied" && <Note tone="error">{t.cameraDenied}</Note>}
       {rec.error === "unsupported" && <Note tone="error">{t.unsupported}</Note>}
       {error && <Note tone="error">{error}</Note>}

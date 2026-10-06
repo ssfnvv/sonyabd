@@ -44,6 +44,9 @@ export function useRecorder(kind: "audio" | "video", maxSec: number) {
   const startedAt = useRef(0);
   const streamRef = useRef<MediaStream | null>(null);
   const userStopped = useRef(false); // true — запись остановил человек (или лимит времени)
+  // журнал попыток записи — показываем, если запись оборвалась, чтобы понять причину
+  const [debug, setDebug] = useState<string>("");
+  const log = useRef<string[]>([]);
 
   const stopTracks = useCallback(() => {
     streamRef.current?.getTracks().forEach((tr) => tr.stop());
@@ -111,12 +114,20 @@ export function useRecorder(kind: "audio" | "video", maxSec: number) {
       rec.ondataavailable = (e) => {
         if (e.data.size > 0) localChunks.push(e.data);
       };
-      rec.onerror = () => {
-        /* обработаем в onstop */
+      let errName = "";
+      rec.onerror = (ev) => {
+        const er = (ev as unknown as { error?: DOMException }).error;
+        errName = er ? `${er.name}:${er.message}` : "error";
       };
+      s.getTracks().forEach((tr) => {
+        tr.onended = () => log.current.push(`${tr.kind} ended`);
+      });
       rec.onstop = () => {
         const crashed = !userStopped.current && Date.now() - startedThis < maxSec * 1000 - 300;
-        const empty = localChunks.reduce((n, c) => n + c.size, 0) < 1000;
+        const bytes = localChunks.reduce((n, c) => n + c.size, 0);
+        const empty = bytes < 1000;
+        log.current.push(`${mimeType || "auto"} ${Date.now() - startedThis}ms ${bytes}b ${errName}`.trim());
+        setDebug(log.current.join(" | "));
         if ((crashed || empty) && i + 1 < mimes.length && recorder.current === rec) {
           // формат не взлетел — пробуем следующий, таймер начинаем заново
           startWith(s, mimes, i + 1);
@@ -150,6 +161,8 @@ export function useRecorder(kind: "audio" | "video", maxSec: number) {
     const s = streamRef.current ?? (await open());
     if (!s) return;
     userStopped.current = false;
+    log.current = [];
+    setDebug("");
     startWith(s, supportedMimes(kind), 0);
     if (timer.current) clearInterval(timer.current);
     timer.current = setInterval(() => {
@@ -176,5 +189,5 @@ export function useRecorder(kind: "audio" | "video", maxSec: number) {
     [],
   );
 
-  return { state, error, seconds, blob, stream, open, start, stop, reset, stopTracks, setBlob, setSeconds, setState };
+  return { debug, state, error, seconds, blob, stream, open, start, stop, reset, stopTracks, setBlob, setSeconds, setState };
 }
