@@ -26,7 +26,9 @@ export default function ContributePage() {
     setReady(true);
   }, []);
 
-  useEffect(() => window.scrollTo({ top: 0 }), [screen]);
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [screen]);
 
   if (!ready) return <main className="bg-dreamy min-h-dvh" />;
 

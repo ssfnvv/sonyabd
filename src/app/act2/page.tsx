@@ -44,7 +44,10 @@ export default function Act2() {
 
   useEffect(() => {
     // /act2?demo — показать пример с картинками-заглушками, пока друзья не загрузили своё
-    if (new URLSearchParams(window.location.search).has("demo")) return setCards(demoCards());
+    if (new URLSearchParams(window.location.search).has("demo")) {
+      setCards(demoCards());
+      return;
+    }
     fetch("/api/public/timeline")
       .then((r) => (r.ok ? r.json() : []))
       .then(setCards)

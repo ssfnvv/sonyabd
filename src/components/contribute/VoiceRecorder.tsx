@@ -63,7 +63,10 @@ function VoiceRecordStep({
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!rec.blob) return setAudioUrl(null);
+    if (!rec.blob) {
+      setAudioUrl(null);
+      return;
+    }
     const url = URL.createObjectURL(rec.blob);
     setAudioUrl(url);
     return () => URL.revokeObjectURL(url);

@@ -42,7 +42,10 @@ export function VideoRecorder({ friend, onBack, onDone }: { friend: Friend; onBa
   }, [rec.stream]);
 
   useEffect(() => {
-    if (!rec.blob) return setPlaybackUrl(null);
+    if (!rec.blob) {
+      setPlaybackUrl(null);
+      return;
+    }
     const url = URL.createObjectURL(rec.blob);
     setPlaybackUrl(url);
     return () => URL.revokeObjectURL(url);
