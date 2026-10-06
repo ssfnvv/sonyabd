@@ -206,7 +206,7 @@ export default function Act3() {
                     <button
                       onClick={() => jump(i)}
                       className={cn(
-                        "flex h-[2.2rem] w-full items-end gap-2 pb-[3px] text-left font-[Caveat] text-[1.55rem] font-bold leading-none",
+                        "flex h-[2.2rem] w-full items-end gap-2 pb-[3px] text-left font-hand text-[1.55rem] font-bold leading-none",
                         i === current ? "text-pink-deep" : "text-[#4a2a36]/75",
                       )}
                     >

@@ -152,8 +152,8 @@ export default function Act4() {
                     exit={{ y: 20, opacity: 0, rotate: 6 }}
                     transition={{ type: "spring", damping: 13 }}
                   >
-                    <p className="font-[Caveat] text-xl font-bold leading-none text-[#8a6d3b]">{t.incoming}</p>
-                    <p className="mt-1 font-[Caveat] text-[2.6rem] font-bold leading-none text-rose-ink">{call.name}</p>
+                    <p className="font-hand text-xl font-bold leading-none text-[#8a6d3b]">{t.incoming}</p>
+                    <p className="mt-1 font-hand text-[2.6rem] font-bold leading-none text-rose-ink">{call.name}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -215,7 +215,7 @@ export default function Act4() {
                       {f.name.trim().charAt(0).toUpperCase() || "·"}
                     </div>
                   </div>
-                  <span className={cn("max-w-full truncate font-[Caveat] text-xl font-bold leading-none", on ? "text-pink-deep" : "text-rose-ink/75")}>
+                  <span className={cn("max-w-full truncate font-hand text-xl font-bold leading-none", on ? "text-pink-deep" : "text-rose-ink/75")}>
                     {f.name}
                   </span>
                 </motion.div>

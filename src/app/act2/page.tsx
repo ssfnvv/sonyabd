@@ -192,12 +192,12 @@ export default function Act2() {
                           }
                         >
                           {card.story && (
-                            <p className="whitespace-pre-wrap font-[Caveat] text-[1.45rem] font-bold leading-[1.15] text-[#4a2a36]">
+                            <p className="whitespace-pre-wrap font-hand text-[1.45rem] font-bold leading-[1.15] text-[#4a2a36]">
                               {card.story}
                             </p>
                           )}
                           {card.name && (
-                            <p className="mt-2 self-end font-[Caveat] text-[1.6rem] font-bold leading-none text-pink-deep">{card.name}</p>
+                            <p className="mt-2 self-end font-hand text-[1.6rem] font-bold leading-none text-pink-deep">{card.name}</p>
                           )}
                         </div>
                       </motion.div>

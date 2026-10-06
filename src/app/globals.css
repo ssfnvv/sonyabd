@@ -30,6 +30,11 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* Рукописный шрифт для подписей, историй и записок */
+.font-hand {
+  font-family: "Caveat", cursive;
+}
+
 /* «Стол» для скрапбука в акте 2: кремовая бумага в розовую клетку с лёгким зерном */
 .scrap-desk {
   background-color: #fbf3ea;
