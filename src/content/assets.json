@@ -518,11 +518,6 @@
   "w": 1200,
   "h": 844
  },
- "phone-handset": {
-  "group": "decor",
-  "w": 244,
-  "h": 1400
- },
  "felt-bubble": {
   "group": "decor",
   "w": 1000,

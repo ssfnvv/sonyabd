@@ -2,13 +2,12 @@
 
 // Телефон из фотографий (вырезаны из картинок владелицы):
 //  • звонит — розовый дисковый телефон дребезжит, по бокам «дзынь»-дуги, вокруг мерцают фетровые звёзды;
-//  • ответили — телефон уезжает вниз, сверху на витом проводе опускается трубка и качается,
-//    из динамика расходятся звуковые круги; тап по трубке — она уезжает обратно вверх.
-import { AnimatePresence, motion } from "framer-motion";
+//  • ответили — телефон мягко покачивается, из трубки расходятся звуковые круги;
+//    тап по телефону — «положить трубку».
+import { motion } from "framer-motion";
 import { assetUrl } from "@/content/assets";
 
 const PHONE = assetUrl("phone-rotary");
-const HANDSET = assetUrl("phone-handset");
 const STAR = assetUrl("felt-star");
 
 export function PhotoPhone({ state, onTap }: { state: "idle" | "ringing" | "talking"; onTap?: () => void }) {
@@ -20,7 +19,7 @@ export function PhotoPhone({ state, onTap }: { state: "idle" | "ringing" | "talk
         { right: "-2%", top: "6%", w: 40, d: 0.6 },
         { right: "8%", bottom: "-6%", w: 32, d: 1.2 },
       ].map(({ w, d, ...pos }, i) => (
-        // eslint-disable-next-line @next/next/no-img-element
+         
         <motion.img
           key={i}
           src={STAR}
@@ -36,11 +35,11 @@ export function PhotoPhone({ state, onTap }: { state: "idle" | "ringing" | "talk
       <motion.button
         type="button"
         aria-label="phone"
-        onClick={state === "ringing" ? onTap : undefined}
+        onClick={state === "idle" ? undefined : onTap}
         className="relative z-10 block w-full"
         animate={
           state === "talking"
-            ? { y: 70, x: -30, scale: 0.78, opacity: 0.3, rotate: -4 }
+            ? { y: [0, -4, 0], scale: 1, opacity: 1, rotate: 0 }
             : state === "ringing"
               ? { y: 0, scale: 1, opacity: 1, rotate: [0, -3.5, 3.5, -3.5, 3.5, -2, 0] }
               : { y: 0, scale: 1, opacity: 1, rotate: 0 }
@@ -48,7 +47,9 @@ export function PhotoPhone({ state, onTap }: { state: "idle" | "ringing" | "talk
         transition={
           state === "ringing"
             ? { rotate: { duration: 0.5, repeat: Infinity, repeatDelay: 0.9 }, default: { type: "spring", damping: 14 } }
-            : { type: "spring", damping: 16 }
+            : state === "talking"
+              ? { y: { duration: 1.8, repeat: Infinity, ease: "easeInOut" }, default: { type: "spring", damping: 16 } }
+              : { type: "spring", damping: 16 }
         }
         style={{ transformOrigin: "50% 85%" }}
       >
@@ -72,43 +73,20 @@ export function PhotoPhone({ state, onTap }: { state: "idle" | "ringing" | "talk
         </svg>
       )}
 
-      {/* трубка на проводе опускается сверху */}
-      <AnimatePresence>
-        {state === "talking" && (
-          <motion.button
-            type="button"
-            aria-label="handset"
-            onClick={onTap}
-            className="fixed left-[70%] top-0 z-30 h-[66dvh] -translate-x-1/2"
-            initial={{ y: "-105%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "-110%", transition: { duration: 0.45, ease: "easeIn" } }}
-            transition={{ type: "spring", damping: 11, stiffness: 70 }}
-          >
-            <motion.div
-              className="relative h-full"
-              style={{ transformOrigin: "50% 0%" }}
-              animate={{ rotate: [5, -5, 5] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={HANDSET} alt="" draggable={false} className="h-full w-auto drop-shadow-[0_14px_16px_rgba(122,59,82,.3)]" />
-              {/* звуковые круги у динамика */}
-              <span className="pointer-events-none absolute bottom-[12%] left-[18%]">
-                {[0, 1, 2].map((i) => (
-                  <motion.span
-                    key={i}
-                    className="absolute -left-6 -top-6 size-12 rounded-full border-[3px] border-pink-deep"
-                    initial={{ scale: 0.4, opacity: 0.9 }}
-                    animate={{ scale: 2.4, opacity: 0 }}
-                    transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.5 }}
-                  />
-                ))}
-              </span>
-            </motion.div>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* разговор: из трубки расходятся звуковые круги */}
+      {state === "talking" && (
+        <span className="pointer-events-none absolute left-[17%] top-[22%] z-20">
+          {[0, 1, 2].map((i) => (
+            <motion.span
+              key={i}
+              className="absolute -left-7 -top-7 size-14 rounded-full border-[3px] border-pink-deep"
+              initial={{ scale: 0.4, opacity: 0.9 }}
+              animate={{ scale: 2.4, opacity: 0 }}
+              transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.5 }}
+            />
+          ))}
+        </span>
+      )}
     </div>
   );
 }
