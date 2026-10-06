@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { hash } from "./RansomText";
 
 // Каждый дудл — набор штрихов в квадрате 60×60
-const DOODLES: Record<string, string[]> = {
+export const DOODLES: Record<string, string[]> = {
   heart: ["M30 50 C12 38 6 28 10 19 C14 10 25 10 30 20 C35 10 46 10 50 19 C54 28 48 38 30 50"],
   star: ["M30 6 L36 23 L54 24 L40 35 L45 53 L30 43 L15 53 L20 35 L6 24 L24 23 Z"],
   sparkle: ["M30 6 Q32 28 54 30 Q32 32 30 54 Q28 32 6 30 Q28 28 30 6", "M50 8 l0 8 M46 12 l8 0"],
