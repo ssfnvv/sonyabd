@@ -17,6 +17,7 @@ import { ActShell } from "@/components/acts/ActShell";
 import { RotaryPhone } from "@/components/acts/RotaryPhone";
 import { hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
+import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act4;
 type Phase = "loading" | "ringing" | "talking" | "between" | "conference" | "done";
@@ -46,7 +47,7 @@ export default function Act4() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const demo = new URLSearchParams(window.location.search).has("demo");
+      const demo = isDemo();
       const [c, f] = demo ? [demoClips(3, 5), demoClips(5, 2)] : await Promise.all([fetchClips("call"), fetchClips("final")]);
       if (cancelled) return;
       setCalls(c);
@@ -283,6 +284,6 @@ function demoClips(n: number, sec: number): MixClip[] {
       const tt = k / ctx.sampleRate;
       d[k] = Math.sin(2 * Math.PI * f * tt) * Math.max(0, Math.sin(tt * Math.PI * 2.4)) * 0.22;
     }
-    return { id: `demo${n}-${i}`, name: "…", start: 0, dur: sec, buffer: b };
+    return { id: `demo${n}-${i}`, name: demoName(i), start: 0, dur: sec, buffer: b };
   });
 }

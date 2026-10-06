@@ -18,6 +18,7 @@ import { unlockAudio } from "@/lib/sound";
 import { ActShell } from "@/components/acts/ActShell";
 import { Jar } from "@/components/acts/Jar";
 import { RansomText, hash } from "@/components/acts/RansomText";
+import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act6;
 type Video = { id: string; path: string; mime: string; name: string };
@@ -33,7 +34,7 @@ export default function Act6() {
   const demo = useRef(false);
 
   useEffect(() => {
-    demo.current = new URLSearchParams(window.location.search).has("demo");
+    demo.current = isDemo();
     (async () => {
       let data: { videos: Video[]; predictions: Prediction[] } = { videos: [], predictions: [] };
       if (demo.current) data = DEMO;
@@ -318,12 +319,12 @@ function Ending() {
 const DEMO = {
   // демо-ролики: цветные градиенты с тоном вместо настоящих поздравлений
   videos: [
-    { id: "v1", path: "/demo/f9c5d5.mp4", mime: "video/mp4", name: "…" },
-    { id: "v2", path: "/demo/f6cf7a.mp4", mime: "video/mp4", name: "…" },
+    { id: "v1", path: "/demo/f9c5d5.mp4", mime: "video/mp4", name: demoName(0) },
+    { id: "v2", path: "/demo/f6cf7a.mp4", mime: "video/mp4", name: demoName(1) },
   ] as Video[],
   predictions: [
-    { id: "p1", text: "…", name: "…" },
-    { id: "p2", text: "…", name: "…" },
-    { id: "p3", text: "…", name: "…" },
+    { id: "p1", text: `${copy.demo.prediction} 1`, name: demoName(0) },
+    { id: "p2", text: `${copy.demo.prediction} 2`, name: demoName(1) },
+    { id: "p3", text: `${copy.demo.prediction} 3`, name: demoName(2) },
   ],
 };

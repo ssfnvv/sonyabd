@@ -16,6 +16,7 @@ import { assetUrl, ASSETS } from "@/content/assets";
 import { ActShell } from "@/components/acts/ActShell";
 import { Cassette } from "@/components/acts/Cassette";
 import { cn, fmtTime } from "@/components/ui";
+import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act3;
 const BARS = 56;
@@ -26,6 +27,7 @@ export default function Act3() {
   const [total, setTotal] = useState(0);
   const [pos, setPos] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [duration, setDuration] = useState(0);
   const player = useRef<MixPlayer | null>(null);
 
   // загрузка и декодирование голосовых
@@ -33,7 +35,7 @@ export default function Act3() {
     let cancelled = false;
     (async () => {
       let raw: RawClip[];
-      if (new URLSearchParams(window.location.search).has("demo")) {
+      if (isDemo()) {
         const c = await demoClips();
         if (!cancelled) setClips(c);
         return;
@@ -57,6 +59,7 @@ export default function Act3() {
     if (!clips) return;
     const p = new MixPlayer(clips);
     player.current = p;
+    setDuration(p.total);
     return () => p.dispose();
   }, [clips]);
 
@@ -80,7 +83,6 @@ export default function Act3() {
   }, []);
 
   const peaks = useMemo(() => (clips ? mixPeaks(clips, BARS) : []), [clips]);
-  const duration = player.current?.total ?? 0;
   const current = clips && clips.length ? player.current?.clipAt(pos) ?? 0 : -1;
 
   const toggle = useCallback(() => {
@@ -252,7 +254,7 @@ async function demoClips(): Promise<MixClip[]> {
       const env = Math.max(0, Math.sin(tt * Math.PI * (2.2 + i * 0.3))) * (0.6 + 0.4 * Math.sin(tt * 1.3));
       d[k] = Math.sin(2 * Math.PI * f * tt) * env * 0.25;
     }
-    out.push({ id: `demo${i}`, name: "…", start, dur, buffer: b });
+    out.push({ id: `demo${i}`, name: demoName(i), start, dur, buffer: b });
     start += dur + 0.9;
   }
   return out;

@@ -1,10 +1,13 @@
+import { isDemo } from "./demo";
+
 // Момент дня рождения: 8 октября 2026, 00:00 по Москве (UTC+3) = 7 октября 21:00 UTC
 const REAL_TARGET = Date.parse("2026-10-07T21:00:00Z");
 
 // Для проверки: /act1?test=15 — полночь наступит через 15 секунд после открытия
 export function getTarget(): number {
   if (typeof window !== "undefined") {
-    const test = new URLSearchParams(window.location.search).get("test");
+    // в демо-режиме «полночь» наступает через 5 секунд
+    const test = new URLSearchParams(window.location.search).get("test") ?? (isDemo() ? "5" : null);
     if (test && Number.isFinite(Number(test))) {
       const key = "sonya_test_target";
       const saved = sessionStorage.getItem(key);

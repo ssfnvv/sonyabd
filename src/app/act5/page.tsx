@@ -17,6 +17,7 @@ import { assetUrl, ASSETS } from "@/content/assets";
 import { ActShell } from "@/components/acts/ActShell";
 import { RansomText, hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
+import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act5;
 const MAX_PER_ROUND = 12; // чтобы викторина не растянулась, берём до 12 вопросов в раунде
@@ -59,7 +60,7 @@ export default function Act5() {
 
   useEffect(() => {
     (async () => {
-      const demo = new URLSearchParams(window.location.search).has("demo");
+      const demo = isDemo();
       try {
         const data = demo ? DEMO : await fetch("/api/public/quiz").then((r) => (r.ok ? r.json() : null));
         const list = data ? buildQuestions(data) : [];
@@ -267,12 +268,13 @@ export default function Act5() {
   );
 }
 
-// Демо-данные: заглушки, чтобы посмотреть оформление
+// Демо-данные: подложки, чтобы посмотреть оформление
+const d = copy.demo;
 const DEMO = {
-  names: ["…", "· ·", "· · ·", "· · · ·", "· · · · ·"],
+  names: [0, 1, 2, 3, 4].map(demoName),
   round1: [
-    { id: "d1", text: "…", answer: "…" },
-    { id: "d2", text: "…", answer: "· ·" },
+    { id: "d1", text: d.fact, answer: demoName(0) },
+    { id: "d2", text: d.fact, answer: demoName(1) },
   ],
-  round2: [{ id: "d3", text: "…", answer: "· ·", wrong: ["…", "· · ·", "· · · ·"] }],
+  round2: [{ id: "d3", text: d.question, answer: `${d.answer} 1`, wrong: [`${d.answer} 2`, `${d.answer} 3`, `${d.answer} 4`] }],
 };

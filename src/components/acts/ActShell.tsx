@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { copy } from "@/content/copy";
 import { cn } from "../ui";
+import { DemoBadge } from "./DemoBadge";
 
 export function ActShell({
   back,
@@ -21,6 +22,7 @@ export function ActShell({
 }) {
   return (
     <main className={cn("relative min-h-dvh overflow-hidden", className)}>
+      <DemoBadge />
       {back && (
         <Link
           href={back}

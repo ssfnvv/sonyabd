@@ -13,6 +13,7 @@ import { CardLayer } from "@/components/CardView";
 import { ActShell } from "@/components/acts/ActShell";
 import { RansomText, hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
+import { isDemo, demoName } from "@/lib/demo";
 
 const t = copy.act2;
 
@@ -44,7 +45,7 @@ export default function Act2() {
 
   useEffect(() => {
     // /act2?demo — показать пример с картинками-заглушками, пока друзья не загрузили своё
-    if (new URLSearchParams(window.location.search).has("demo")) {
+    if (isDemo()) {
       setCards(demoCards());
       return;
     }
@@ -254,6 +255,6 @@ function demoCards(): Card[] {
     if (i % 2 === 0) els.push({ id: `s${i}`, kind: "sticker", src: ["heart", "star", "bow"][i % 3], x: 0.8, y: 0.85, scale: 1, rotation: -10, z: 3 });
     if (i === 3 && cats[0]) els.push({ id: `k${i}`, kind: "asset", src: cats[2 % cats.length].id, x: 0.75, y: 0.78, scale: 1, rotation: 6, z: 4 });
     // в демо вместо историй — заглушка, настоящие тексты пишут друзья
-    return { id: `demo-${i}`, year, story: "…", elements: els, name: "…" };
+    return { id: `demo-${i}`, year, story: copy.demo.story, elements: els, name: demoName(i) };
   });
 }
