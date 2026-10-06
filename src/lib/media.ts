@@ -1,7 +1,7 @@
-// Публичная ссылка на файл в хранилище (работает и на сервере, и в браузере)
+// Публичная ссылка на файл в хранилище. Идёт через наш домен (/sb → Supabase),
+// чтобы фото и голосовые открывались в России без VPN.
 export function mediaUrl(path: string): string {
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  return `${base}/storage/v1/object/public/media/${path}`;
+  return `/sb/storage/v1/object/public/media/${path}`;
 }
 
 // Элемент карточки таймлайна

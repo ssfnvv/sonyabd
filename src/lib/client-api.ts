@@ -2,18 +2,19 @@
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-// Браузерный клиент с публичным ключом. Им только загружаем файлы по подписанным ссылкам —
-// к таблицам у него доступа нет (RLS без политик).
-let browserClient: SupabaseClient | null = null;
-function storage() {
-  if (!browserClient) {
-    browserClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-      { auth: { persistSession: false } },
-    );
+// Браузерные клиенты с публичным ключом. Ими только загружаем файлы по подписанным ссылкам —
+// к таблицам у них доступа нет (RLS без политик).
+// Основной путь — через наш домен (/sb), он работает в России без VPN.
+// Запасной — напрямую в Supabase, если прокси почему-то не пропустил файл.
+const clients: Partial<Record<"proxy" | "direct", SupabaseClient>> = {};
+function storage(via: "proxy" | "direct") {
+  if (!clients[via]) {
+    const url = via === "proxy" ? `${window.location.origin}/sb` : (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "");
+    clients[via] = createClient(url, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "", {
+      auth: { persistSession: false },
+    });
   }
-  return browserClient.storage.from("media");
+  return clients[via]!.storage.from("media");
 }
 
 export type Friend = { id: string; name: string };
@@ -67,7 +68,9 @@ export async function uploadFile(
         kind,
         ext,
       });
-      const { error } = await storage().uploadToSignedUrl(path, token, blob, {
+      // чётные попытки — через прокси, нечётные — напрямую
+      const via = attempt % 2 === 0 ? "proxy" : "direct";
+      const { error } = await storage(via).uploadToSignedUrl(path, token, blob, {
         contentType: blob.type || undefined,
       });
       if (error) throw error;
