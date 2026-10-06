@@ -527,5 +527,165 @@
   "group": "clip",
   "w": 600,
   "h": 600
+ },
+ "nametag": {
+  "group": "decor",
+  "w": 900,
+  "h": 492
+ },
+ "candy-halftone": {
+  "group": "clip",
+  "w": 341,
+  "h": 420
+ },
+ "bow-halftone": {
+  "group": "clip",
+  "w": 388,
+  "h": 420
+ },
+ "tulips": {
+  "group": "clip",
+  "w": 425,
+  "h": 600
+ },
+ "ocat-01": {
+  "group": "cat",
+  "w": 332,
+  "h": 384
+ },
+ "ocat-02": {
+  "group": "cat",
+  "w": 357,
+  "h": 374
+ },
+ "ocat-03": {
+  "group": "cat",
+  "w": 391,
+  "h": 381
+ },
+ "ocat-04": {
+  "group": "cat",
+  "w": 414,
+  "h": 378
+ },
+ "ocat-05": {
+  "group": "cat",
+  "w": 371,
+  "h": 381
+ },
+ "ocat-06": {
+  "group": "cat",
+  "w": 337,
+  "h": 377
+ },
+ "ocat-07": {
+  "group": "cat",
+  "w": 359,
+  "h": 376
+ },
+ "ocat-08": {
+  "group": "cat",
+  "w": 334,
+  "h": 374
+ },
+ "ocat-09": {
+  "group": "cat",
+  "w": 330,
+  "h": 384
+ },
+ "ocat-10": {
+  "group": "cat",
+  "w": 322,
+  "h": 390
+ },
+ "ocat-11": {
+  "group": "cat",
+  "w": 399,
+  "h": 384
+ },
+ "ocat-12": {
+  "group": "cat",
+  "w": 374,
+  "h": 381
+ },
+ "ocat-13": {
+  "group": "cat",
+  "w": 379,
+  "h": 380
+ },
+ "ocat-14": {
+  "group": "cat",
+  "w": 338,
+  "h": 381
+ },
+ "ocat-15": {
+  "group": "cat",
+  "w": 359,
+  "h": 369
+ },
+ "ocat-16": {
+  "group": "cat",
+  "w": 343,
+  "h": 377
+ },
+ "ocat-17": {
+  "group": "cat",
+  "w": 399,
+  "h": 389
+ },
+ "ocat-18": {
+  "group": "cat",
+  "w": 338,
+  "h": 368
+ },
+ "ocat-19": {
+  "group": "cat",
+  "w": 353,
+  "h": 384
+ },
+ "ocat-20": {
+  "group": "cat",
+  "w": 352,
+  "h": 382
+ },
+ "ocat-21": {
+  "group": "cat",
+  "w": 324,
+  "h": 384
+ },
+ "ocat-22": {
+  "group": "cat",
+  "w": 420,
+  "h": 336
+ },
+ "ocat-23": {
+  "group": "cat",
+  "w": 369,
+  "h": 378
+ },
+ "ocat-24": {
+  "group": "cat",
+  "w": 338,
+  "h": 381
+ },
+ "ocat-25": {
+  "group": "cat",
+  "w": 418,
+  "h": 359
+ },
+ "ocat-26": {
+  "group": "cat",
+  "w": 388,
+  "h": 386
+ },
+ "ocat-27": {
+  "group": "cat",
+  "w": 375,
+  "h": 326
+ },
+ "ocat-28": {
+  "group": "cat",
+  "w": 328,
+  "h": 377
  }
 }

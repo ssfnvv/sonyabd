@@ -18,6 +18,7 @@ import { Doodles } from "@/components/acts/Doodles";
 import { PeekCat } from "@/components/acts/PeekCat";
 
 import { PhotoPhone } from "@/components/acts/PhotoPhone";
+import { Conference } from "@/components/acts/Conference";
 import { assetUrl } from "@/content/assets";
 import { hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
@@ -25,7 +26,6 @@ import { cn } from "@/components/ui";
 const t = copy.act4;
 type Phase = "loading" | "ringing" | "talking" | "between" | "conference" | "done";
 
-const BUBBLE_COLORS = ["#f9c5d5", "#fff0dc", "#cfe0f5", "#d8efdf", "#f6cf7a", "#e8d5f5"];
 
 async function fetchClips(type: "call" | "final"): Promise<MixClip[]> {
   let raw: RawClip[] = [];
@@ -178,45 +178,7 @@ export default function Act4() {
         )}
 
         {/* ---------- конф-колл ---------- */}
-        {inConference && (
-          <div className="flex w-full flex-wrap justify-center gap-x-4 gap-y-5">
-            {finals.map((f, i) => {
-              const color = BUBBLE_COLORS[Math.floor(hash(f.id) * BUBBLE_COLORS.length)];
-              const on = i === speaking;
-              return (
-                <motion.div
-                  key={f.id}
-                  className="flex w-20 flex-col items-center gap-1"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: on ? 1.15 : 1, opacity: 1 }}
-                  transition={{ delay: phase === "conference" && speaking < 0 ? i * 0.12 : 0, type: "spring", damping: 12 }}
-                >
-                  <div className="relative">
-                    {on && (
-                      <motion.span
-                        className="absolute inset-0 rounded-full border-4 border-pink-deep"
-                        animate={{ scale: [1, 1.35], opacity: [0.9, 0] }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                      />
-                    )}
-                    <div
-                      className={cn(
-                        "grid size-16 place-items-center rounded-full font-display text-2xl font-bold text-rose-ink ring-4 transition-shadow",
-                        on ? "ring-pink-deep shadow-[0_0_24px_#e88aa8]" : "ring-white",
-                      )}
-                      style={{ background: color }}
-                    >
-                      {f.name.trim().charAt(0).toUpperCase() || "·"}
-                    </div>
-                  </div>
-                  <span className={cn("max-w-full truncate font-hand text-xl font-bold leading-none", on ? "text-pink-deep" : "text-rose-ink/75")}>
-                    {f.name}
-                  </span>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
+        {inConference && <Conference people={finals} speaking={speaking} />}
 
         {phase === "done" && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
