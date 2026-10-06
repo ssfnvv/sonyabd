@@ -26,6 +26,8 @@ export function ParticleName({ text, onFormed }: { text: string; onFormed?: () =
 
     // Рисуем имя во внутреннем холсте и собираем точки, где есть буквы
     const sampleText = (): { x: number; y: number }[] => {
+      // во встроенных браузерах (Telegram, Instagram) размер окна при старте бывает 0
+      if (W < 10 || H < 10) return [];
       const off = document.createElement("canvas");
       off.width = W;
       off.height = H;
@@ -56,8 +58,8 @@ export function ParticleName({ text, onFormed }: { text: string; onFormed?: () =
 
     const build = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = window.innerWidth;
-      H = window.innerHeight;
+      W = window.innerWidth || document.documentElement.clientWidth;
+      H = window.innerHeight || document.documentElement.clientHeight;
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       canvas.style.width = `${W}px`;
