@@ -9,12 +9,22 @@ import { CARD_ASPECT, TIMELINE_YEARS, type CardElement } from "@/lib/media";
 import { compressImage } from "@/lib/image";
 import { submit, uploadFile, type Friend } from "@/lib/client-api";
 import { STICKERS, StickerSvg } from "../stickers";
+import { assetsByGroup, assetThumbUrl, type AssetGroup } from "@/content/assets";
 import { CardElementView, elementStyle } from "../CardView";
 import { Button, Note, Screen, TextArea, cn } from "../ui";
 
 const t = copy.contribute;
 
 type EditorElement = CardElement & { localUrl?: string; uploading?: boolean };
+
+// Вкладки всплывающего меню
+type SheetTab = "frames" | "stickers" | "cats" | "paper" | "lace";
+const TAB_GROUP: Record<Exclude<SheetTab, "stickers">, AssetGroup> = {
+  frames: "frame",
+  cats: "cat",
+  paper: "paper",
+  lace: "lace",
+};
 
 type Pt = { x: number; y: number };
 type Baseline = {
@@ -39,11 +49,14 @@ export function CardEditor({ friend, onBack, onDone }: { friend: Friend; onBack:
   const [elements, setElements] = useState<EditorElement[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [tab, setTab] = useState<SheetTab>("frames");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const frameFileRef = useRef<HTMLInputElement>(null);
+  const pendingFrame = useRef<string | null>(null); // какую рамку выбрали, пока ждём фото
   const elementsRef = useRef(elements);
   elementsRef.current = elements;
   const pointers = useRef(new Map<number, Pt>());
@@ -96,6 +109,34 @@ export function CardEditor({ friend, onBack, onDone }: { friend: Friend; onBack:
       }
     }
     if (fileRef.current) fileRef.current.value = "";
+  };
+
+  // ---------- рамка: выбираешь рамку → выбираешь фото → фото встаёт в окошко ----------
+  const pickFrame = (frameId: string) => {
+    pendingFrame.current = frameId;
+    setSheetOpen(false);
+    frameFileRef.current?.click();
+  };
+
+  const onPickFramePhoto = async (files: FileList | null) => {
+    const file = files?.[0];
+    const frameId = pendingFrame.current;
+    if (frameFileRef.current) frameFileRef.current.value = "";
+    if (!file || !frameId) return;
+    const id = crypto.randomUUID();
+    try {
+      const { blob } = await compressImage(file);
+      const localUrl = URL.createObjectURL(blob);
+      addElement({ id, kind: "frame", src: frameId, localUrl, uploading: true });
+      uploadFile(friend.id, "photo", blob, "jpg")
+        .then((path) => update(id, { photo: path, uploading: false }))
+        .catch(() => {
+          setElements((els) => els.filter((e) => e.id !== id));
+          setError(t.uploadError);
+        });
+    } catch {
+      setError(t.uploadError);
+    }
   };
 
   // ---------- жесты ----------
@@ -244,7 +285,7 @@ export function CardEditor({ friend, onBack, onDone }: { friend: Friend; onBack:
             )}
             style={elementStyle(e)}
           >
-            <CardElementView e={e} src={e.localUrl} />
+            <CardElementView e={e} photoSrc={e.localUrl} />
             {e.uploading && (
               <div className="absolute inset-0 grid place-items-center rounded-md bg-white/50">
                 <span className="size-6 animate-spin rounded-full border-4 border-pink border-t-pink-deep" />
@@ -268,6 +309,7 @@ export function CardEditor({ friend, onBack, onDone }: { friend: Friend; onBack:
         </Button>
       </div>
       <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => onPickPhotos(e.target.files)} />
+      <input ref={frameFileRef} type="file" accept="image/*" hidden onChange={(e) => onPickFramePhoto(e.target.files)} />
 
       <TextArea
         value={story}
@@ -299,25 +341,78 @@ export function CardEditor({ friend, onBack, onDone }: { friend: Friend; onBack:
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
             >
-              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-pink" />
-              <div className="grid grid-cols-4 gap-3">
-                {STICKERS.map((s) => (
+              <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-pink" />
+              {/* вкладки */}
+              <div className="-mx-5 mb-3 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none]">
+                {(Object.keys(t.sheetTabs) as SheetTab[]).map((k) => (
                   <button
-                    key={s.id}
-                    className="aspect-square rounded-2xl bg-white p-2 ring-2 ring-pink-soft active:scale-90"
-                    onClick={() => {
-                      addElement({ id: crypto.randomUUID(), kind: "sticker", src: s.id });
-                      setSheetOpen(false);
-                    }}
+                    key={k}
+                    onClick={() => setTab(k)}
+                    className={cn(
+                      "shrink-0 rounded-full px-4 py-1.5 text-sm font-bold ring-2",
+                      tab === k ? "bg-pink-deep text-white ring-pink-deep" : "bg-white ring-pink-soft",
+                    )}
                   >
-                    <StickerSvg id={s.id} className="size-full" />
+                    {t.sheetTabs[k]}
                   </button>
                 ))}
+              </div>
+              <div className="max-h-[52dvh] overflow-y-auto overscroll-contain pb-2">
+                {tab === "stickers" ? (
+                  <div className="grid grid-cols-4 gap-3">
+                    {STICKERS.map((s) => (
+                      <button
+                        key={s.id}
+                        className="aspect-square rounded-2xl bg-white p-2 ring-2 ring-pink-soft active:scale-90"
+                        onClick={() => {
+                          addElement({ id: crypto.randomUUID(), kind: "sticker", src: s.id });
+                          setSheetOpen(false);
+                        }}
+                      >
+                        <StickerSvg id={s.id} className="size-full" />
+                      </button>
+                    ))}
+                    {assetsByGroup("clip").map((a) => (
+                      <AssetButton key={a.id} id={a.id} onClick={() => { addElement({ id: crypto.randomUUID(), kind: "asset", src: a.id }); setSheetOpen(false); }} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className={cn("grid gap-3", tab === "lace" ? "grid-cols-1" : tab === "frames" ? "grid-cols-2" : "grid-cols-3")}>
+                    {assetsByGroup(TAB_GROUP[tab]).map((a) => (
+                      <AssetButton
+                        key={a.id}
+                        id={a.id}
+                        wide={tab === "lace"}
+                        onClick={() => {
+                          if (tab === "frames") return pickFrame(a.id);
+                          addElement({ id: crypto.randomUUID(), kind: "asset", src: a.id });
+                          setSheetOpen(false);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
     </Screen>
+  );
+}
+
+// Кнопка-превью вырезанной картинки в меню
+function AssetButton({ id, onClick, wide }: { id: string; onClick: () => void; wide?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "overflow-hidden rounded-2xl bg-white p-2 ring-2 ring-pink-soft active:scale-90",
+        wide ? "h-16 w-full" : "aspect-square w-full",
+      )}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={assetThumbUrl(id)} alt="" loading="lazy" draggable={false} className="size-full object-contain" />
+    </button>
   );
 }

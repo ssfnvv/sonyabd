@@ -32,7 +32,10 @@ export async function DELETE(req: Request) {
     const paths: string[] = [];
     if (typeof row.path === "string") paths.push(row.path);
     if (Array.isArray(row.elements)) {
-      (row.elements as CardElement[]).forEach((e) => e.kind === "photo" && paths.push(e.src));
+      (row.elements as CardElement[]).forEach((e) => {
+        if (e.kind === "photo") paths.push(e.src);
+        if (e.kind === "frame" && e.photo) paths.push(e.photo);
+      });
     }
     if (paths.length) await db().storage.from(BUCKET).remove(paths);
   }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db, friendExists, ownsPath } from "@/lib/supabase-server";
 import type { CardElement } from "@/lib/media";
+import { isAssetId } from "@/content/assets";
 
 // Приём контента от друзей. Каждый тип валидируем отдельно.
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -23,13 +24,16 @@ export async function POST(req: Request, ctx: { params: Promise<{ kind: string }
       // Чистим элементы: оставляем только известные поля и допустимые значения
       const elements: CardElement[] = [];
       for (const e of raw as Partial<CardElement>[]) {
-        if (e?.kind !== "photo" && e?.kind !== "sticker") continue;
+        if (!e || !["photo", "sticker", "asset", "frame"].includes(e.kind as string)) continue;
         if (e.kind === "photo" && !ownsPath(friendId, e.src)) continue;
         if (e.kind === "sticker" && !/^[a-z-]{1,30}$/.test(String(e.src))) continue;
+        if (e.kind === "asset" && !isAssetId(e.src)) continue;
+        if (e.kind === "frame" && (!isAssetId(e.src) || !ownsPath(friendId, e.photo))) continue;
         elements.push({
           id: str(e.id, 40) || crypto.randomUUID(),
-          kind: e.kind,
+          kind: e.kind as CardElement["kind"],
           src: String(e.src),
+          ...(e.kind === "frame" ? { photo: e.photo } : {}),
           x: num(e.x, -0.5, 1.5, 0.5),
           y: num(e.y, -0.5, 1.5, 0.5),
           scale: num(e.scale, 0.15, 5, 1),

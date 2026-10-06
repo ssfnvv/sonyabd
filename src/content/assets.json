@@ -1,0 +1,516 @@
+{
+ "canon": {
+  "group": "frame",
+  "w": 900,
+  "h": 602,
+  "windows": [
+   [
+    0.0911,
+    0.3289,
+    0.4578,
+    0.5083
+   ]
+  ]
+ },
+ "pinkcam": {
+  "group": "frame",
+  "w": 900,
+  "h": 573,
+  "windows": [
+   [
+    0.1178,
+    0.185,
+    0.5222,
+    0.6318
+   ]
+  ]
+ },
+ "polaroid": {
+  "group": "frame",
+  "w": 408,
+  "h": 414,
+  "windows": [
+   [
+    0.1324,
+    0.1232,
+    0.7206,
+    0.6449
+   ]
+  ]
+ },
+ "tv": {
+  "group": "frame",
+  "w": 834,
+  "h": 564,
+  "windows": [
+   [
+    0.1007,
+    0.1436,
+    0.6187,
+    0.6755
+   ]
+  ]
+ },
+ "camcorder": {
+  "group": "frame",
+  "w": 900,
+  "h": 521,
+  "windows": [
+   [
+    0.15,
+    0.1727,
+    0.6133,
+    0.6065
+   ]
+  ]
+ },
+ "player": {
+  "group": "frame",
+  "w": 614,
+  "h": 900,
+  "windows": [
+   [
+    0.1254,
+    0.0967,
+    0.7508,
+    0.6733
+   ]
+  ]
+ },
+ "filmstrip": {
+  "group": "frame",
+  "w": 284,
+  "h": 900,
+  "windows": [
+   [
+    0.1761,
+    0.0289,
+    0.6549,
+    0.17
+   ],
+   [
+    0.1761,
+    0.2156,
+    0.6549,
+    0.1733
+   ],
+   [
+    0.1761,
+    0.4089,
+    0.6549,
+    0.1711
+   ],
+   [
+    0.1761,
+    0.5967,
+    0.6549,
+    0.1767
+   ],
+   [
+    0.1761,
+    0.79,
+    0.6549,
+    0.1767
+   ]
+  ]
+ },
+ "locket": {
+  "group": "frame",
+  "w": 825,
+  "h": 444,
+  "windows": [
+   [
+    0.0982,
+    0.1892,
+    0.3491,
+    0.7432
+   ],
+   [
+    0.5745,
+    0.2095,
+    0.3273,
+    0.7297
+   ]
+  ]
+ },
+ "sony": {
+  "group": "frame",
+  "w": 900,
+  "h": 617,
+  "windows": [
+   [
+    0.1144,
+    0.222,
+    0.5578,
+    0.5997
+   ]
+  ]
+ },
+ "polaroid2": {
+  "group": "frame",
+  "w": 408,
+  "h": 414,
+  "windows": [
+   [
+    0.1397,
+    0.1594,
+    0.7426,
+    0.6522
+   ]
+  ]
+ },
+ "player2": {
+  "group": "frame",
+  "w": 616,
+  "h": 900,
+  "windows": [
+   [
+    0.1201,
+    0.0967,
+    0.7484,
+    0.6733
+   ]
+  ]
+ },
+ "matchbox": {
+  "group": "frame",
+  "w": 798,
+  "h": 525,
+  "windows": [
+   [
+    0.2669,
+    0.0686,
+    0.6917,
+    0.8514
+   ]
+  ]
+ },
+ "matchbox2": {
+  "group": "frame",
+  "w": 900,
+  "h": 455,
+  "windows": [
+   [
+    0.3467,
+    0.1385,
+    0.6056,
+    0.7253
+   ]
+  ]
+ },
+ "note-clip": {
+  "group": "paper",
+  "w": 849,
+  "h": 900
+ },
+ "note-kraft": {
+  "group": "paper",
+  "w": 900,
+  "h": 834
+ },
+ "note-grid": {
+  "group": "paper",
+  "w": 900,
+  "h": 900
+ },
+ "note-lined": {
+  "group": "paper",
+  "w": 900,
+  "h": 729
+ },
+ "note-crumpled": {
+  "group": "paper",
+  "w": 800,
+  "h": 900
+ },
+ "lips": {
+  "group": "clip",
+  "w": 264,
+  "h": 228
+ },
+ "bow-satin-pink": {
+  "group": "clip",
+  "w": 420,
+  "h": 233
+ },
+ "hairclips-red": {
+  "group": "clip",
+  "w": 420,
+  "h": 272
+ },
+ "pins-pink": {
+  "group": "clip",
+  "w": 380,
+  "h": 272
+ },
+ "clip-brass": {
+  "group": "clip",
+  "w": 404,
+  "h": 420
+ },
+ "pin-teal": {
+  "group": "clip",
+  "w": 198,
+  "h": 243
+ },
+ "penco-green": {
+  "group": "clip",
+  "w": 420,
+  "h": 270
+ },
+ "penco-gray": {
+  "group": "clip",
+  "w": 420,
+  "h": 281
+ },
+ "bulldog-lilac": {
+  "group": "clip",
+  "w": 344,
+  "h": 420
+ },
+ "penco-pink": {
+  "group": "clip",
+  "w": 420,
+  "h": 198
+ },
+ "pins-red": {
+  "group": "clip",
+  "w": 367,
+  "h": 286
+ },
+ "bulldog-plaid": {
+  "group": "clip",
+  "w": 353,
+  "h": 420
+ },
+ "penco-cream": {
+  "group": "clip",
+  "w": 420,
+  "h": 225
+ },
+ "pin-red": {
+  "group": "clip",
+  "w": 196,
+  "h": 219
+ },
+ "seal-pink": {
+  "group": "clip",
+  "w": 342,
+  "h": 349
+ },
+ "bow-gingham-green": {
+  "group": "clip",
+  "w": 420,
+  "h": 364
+ },
+ "bow-gingham-red": {
+  "group": "clip",
+  "w": 420,
+  "h": 257
+ },
+ "pins-yellow": {
+  "group": "clip",
+  "w": 229,
+  "h": 400
+ },
+ "penco-gold": {
+  "group": "clip",
+  "w": 420,
+  "h": 212
+ },
+ "pin-pink": {
+  "group": "clip",
+  "w": 225,
+  "h": 270
+ },
+ "bulldog-lilac2": {
+  "group": "clip",
+  "w": 393,
+  "h": 420
+ },
+ "bow-satin-olive": {
+  "group": "clip",
+  "w": 420,
+  "h": 219
+ },
+ "bulldog-green": {
+  "group": "clip",
+  "w": 350,
+  "h": 420
+ },
+ "penco-navy": {
+  "group": "clip",
+  "w": 420,
+  "h": 229
+ },
+ "pin-black": {
+  "group": "clip",
+  "w": 197,
+  "h": 338
+ },
+ "pins-yellow2": {
+  "group": "clip",
+  "w": 406,
+  "h": 420
+ },
+ "bow-button": {
+  "group": "clip",
+  "w": 361,
+  "h": 346
+ },
+ "bow-gingham-blue": {
+  "group": "clip",
+  "w": 420,
+  "h": 336
+ },
+ "penco-red": {
+  "group": "clip",
+  "w": 420,
+  "h": 234
+ },
+ "clip-brass2": {
+  "group": "clip",
+  "w": 420,
+  "h": 338
+ },
+ "pin-green": {
+  "group": "clip",
+  "w": 159,
+  "h": 265
+ },
+ "bow-gingham-red2": {
+  "group": "clip",
+  "w": 420,
+  "h": 257
+ },
+ "bulldog-silver": {
+  "group": "clip",
+  "w": 400,
+  "h": 420
+ },
+ "paperclip-pink": {
+  "group": "clip",
+  "w": 130,
+  "h": 420
+ },
+ "penco-blue": {
+  "group": "clip",
+  "w": 420,
+  "h": 276
+ },
+ "seal-olive": {
+  "group": "clip",
+  "w": 366,
+  "h": 420
+ },
+ "seal-pink-bow": {
+  "group": "clip",
+  "w": 420,
+  "h": 396
+ },
+ "tape": {
+  "group": "clip",
+  "w": 420,
+  "h": 90
+ },
+ "bow-gingham-brown": {
+  "group": "clip",
+  "w": 420,
+  "h": 222
+ },
+ "binder-gold2": {
+  "group": "clip",
+  "w": 336,
+  "h": 420
+ },
+ "cat-glasses": {
+  "group": "cat",
+  "w": 495,
+  "h": 600
+ },
+ "cat-wink": {
+  "group": "cat",
+  "w": 556,
+  "h": 600
+ },
+ "cat-tongue": {
+  "group": "cat",
+  "w": 350,
+  "h": 600
+ },
+ "cat-shock": {
+  "group": "cat",
+  "w": 415,
+  "h": 600
+ },
+ "cat-kitten-cupcake": {
+  "group": "cat",
+  "w": 292,
+  "h": 600
+ },
+ "cat-cake": {
+  "group": "cat",
+  "w": 384,
+  "h": 600
+ },
+ "cat-lick": {
+  "group": "cat",
+  "w": 430,
+  "h": 600
+ },
+ "cat-orange": {
+  "group": "cat",
+  "w": 382,
+  "h": 600
+ },
+ "cat-clown": {
+  "group": "cat",
+  "w": 309,
+  "h": 600
+ },
+ "cat-kitten-cake": {
+  "group": "cat",
+  "w": 330,
+  "h": 600
+ },
+ "cat-cupcake": {
+  "group": "cat",
+  "w": 364,
+  "h": 600
+ },
+ "cat-calico": {
+  "group": "cat",
+  "w": 460,
+  "h": 600
+ },
+ "lace-black": {
+  "group": "lace",
+  "w": 2400,
+  "h": 196
+ },
+ "lace-pink": {
+  "group": "lace",
+  "w": 2400,
+  "h": 201
+ },
+ "lace-gray": {
+  "group": "lace",
+  "w": 2400,
+  "h": 157
+ },
+ "lace-white": {
+  "group": "lace",
+  "w": 2400,
+  "h": 134
+ },
+ "lace-burgundy": {
+  "group": "lace",
+  "w": 2400,
+  "h": 188
+ },
+ "lace-blue": {
+  "group": "lace",
+  "w": 2400,
+  "h": 147
+ }
+}
