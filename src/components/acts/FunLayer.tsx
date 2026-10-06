@@ -1,154 +1,115 @@
 "use client";
 
 // «Весёлый слой» поверх каждого акта:
-//  • по низу экрана время от времени пробегает собачка или котик (нарисованы вручную),
-//    посередине останавливается, подпрыгивает и выпускает сердечко;
+//  • время от времени появляется зверёк-дудл: черепаха/лев/слон/жираф/крокодил топают по низу,
+//    волк несётся, котик прыгает дугами, бабочка и стрекоза пролетают, ленивец свисает сверху,
+//    коала и котик выглядывают из угла;
 //  • на каждое касание из-под пальца разлетаются переливающиеся Y2K-звёздочки;
 //  • в углах тихо мерцают хромированные блёстки.
 // Слой не мешает нажатиям (pointer-events: none).
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type TargetAndTransition, type Transition } from "framer-motion";
+import { assetUrl } from "@/content/assets";
 
-// ---------- зверушки (вид сбоку, смотрят вправо) ----------
-function Legs({ color, xs }: { color: string; xs: number[] }) {
-  return (
-    <>
-      {xs.map((x, i) => (
-        <rect
-          key={x}
-          x={x}
-          y={62}
-          width={9}
-          height={15}
-          rx={4.5}
-          fill={color}
-          style={{
-            transformBox: "fill-box",
-            transformOrigin: "50% 0%",
-            animation: `fun-leg 0.32s ease-in-out ${i % 2 ? "0.16s" : "0s"} infinite alternate`,
-          }}
-        />
-      ))}
-    </>
-  );
-}
+// ---------- зверушки-дудлы (линейные рисунки, вырезаны из картинки владелицы) ----------
+// Почти все нарисованы мордочкой влево; когда идут вправо — отражаем.
+type Mode = "walk" | "run" | "leap" | "fly" | "dart" | "hang" | "peek";
+const CRITTERS: { id: string; mode: Mode; h: number; dur: number }[] = [
+  { id: "doodle-turtle", mode: "walk", h: 64, dur: 16 },
+  { id: "doodle-lion", mode: "walk", h: 78, dur: 11 },
+  { id: "doodle-elephant", mode: "walk", h: 82, dur: 13 },
+  { id: "doodle-giraffe", mode: "walk", h: 128, dur: 12 },
+  { id: "doodle-croc", mode: "walk", h: 52, dur: 12 },
+  { id: "doodle-wolf", mode: "run", h: 58, dur: 5.5 },
+  { id: "doodle-leapcat", mode: "leap", h: 82, dur: 4 },
+  { id: "doodle-butterfly", mode: "fly", h: 46, dur: 11 },
+  { id: "doodle-dragonfly", mode: "dart", h: 52, dur: 6 },
+  { id: "doodle-sloth", mode: "hang", h: 120, dur: 9 },
+  { id: "doodle-koala", mode: "peek", h: 96, dur: 6 },
+  { id: "doodle-cat", mode: "peek", h: 100, dur: 6 },
+];
 
-function Corgi() {
-  return (
-    <svg viewBox="0 0 130 90" className="size-full overflow-visible">
-      {/* хвостик */}
-      <g style={{ transformBox: "fill-box", transformOrigin: "100% 60%", animation: "fun-wag 0.25s ease-in-out infinite alternate" }}>
-        <ellipse cx={22} cy={44} rx={9} ry={7} fill="#f3a65c" />
-      </g>
-      <Legs color="#f3a65c" xs={[36, 48, 76, 88]} />
-      <ellipse cx={62} cy={52} rx={36} ry={19} fill="#f3a65c" />
-      <ellipse cx={66} cy={60} rx={26} ry={10} fill="#fff8ee" />
-      {/* голова */}
-      <path d="M90 24 L94 6 L103 20 Z" fill="#f3a65c" stroke="#e48d3e" strokeWidth={1.5} strokeLinejoin="round" />
-      <path d="M104 22 L114 7 L117 25 Z" fill="#f3a65c" stroke="#e48d3e" strokeWidth={1.5} strokeLinejoin="round" />
-      <circle cx={104} cy={38} r={18} fill="#f3a65c" />
-      <ellipse cx={113} cy={45} rx={11} ry={8} fill="#fff8ee" />
-      <ellipse cx={122} cy={41} rx={3.6} ry={3} fill="#3a2430" />
-      <circle cx={106} cy={33} r={2.8} fill="#3a2430" />
-      <circle cx={107} cy={32} r={0.9} fill="#fff" />
-      <ellipse cx={99} cy={44} rx={4.5} ry={2.6} fill="#ff8fb0" opacity={0.6} />
-      <path d="M114 50 q3 7 7 1" fill="#ff7b9c" />
-    </svg>
-  );
-}
-
-function Puppy() {
-  // белый пушистый щенок-облачко
-  return (
-    <svg viewBox="0 0 130 90" className="size-full overflow-visible">
-      <g style={{ transformBox: "fill-box", transformOrigin: "100% 70%", animation: "fun-wag 0.22s ease-in-out infinite alternate" }}>
-        <circle cx={24} cy={38} r={9} fill="#fffaf6" stroke="#ead8e0" strokeWidth={1.5} />
-      </g>
-      <Legs color="#fffaf6" xs={[38, 50, 74, 86]} />
-      {[34, 48, 62, 76, 90].map((x, i) => (
-        <circle key={x} cx={x} cy={50 + (i % 2) * 3} r={16} fill="#fffaf6" stroke="#ead8e0" strokeWidth={1.5} />
-      ))}
-      <ellipse cx={62} cy={52} rx={30} ry={14} fill="#fffaf6" />
-      <circle cx={104} cy={36} r={19} fill="#fffaf6" stroke="#ead8e0" strokeWidth={1.5} />
-      <ellipse cx={94} cy={34} rx={7} ry={13} fill="#f3e2e8" transform="rotate(14 94 34)" />
-      <circle cx={109} cy={33} r={2.8} fill="#3a2430" />
-      <circle cx={110} cy={32} r={0.9} fill="#fff" />
-      <ellipse cx={120} cy={40} rx={3.4} ry={2.8} fill="#3a2430" />
-      <ellipse cx={104} cy={43} rx={4.5} ry={2.6} fill="#ff8fb0" opacity={0.6} />
-      {/* розовый бантик */}
-      <path d="M100 18 l-8 -5 l0 10 Z M100 18 l8 -5 l0 10 Z" fill="#f7a8c0" stroke="#e27a9b" strokeWidth={1.2} strokeLinejoin="round" />
-      <circle cx={100} cy={18} r={2.6} fill="#e88aa8" />
-    </svg>
-  );
-}
-
-function Kitty() {
-  return (
-    <svg viewBox="0 0 130 90" className="size-full overflow-visible">
-      {/* хвост трубой */}
-      <g style={{ transformBox: "fill-box", transformOrigin: "100% 100%", animation: "fun-wag 0.6s ease-in-out infinite alternate" }}>
-        <path d="M30 50 C14 46 10 26 20 14" fill="none" stroke="#b9a4c9" strokeWidth={8} strokeLinecap="round" />
-      </g>
-      <Legs color="#b9a4c9" xs={[38, 50, 74, 86]} />
-      <ellipse cx={62} cy={52} rx={34} ry={17} fill="#b9a4c9" />
-      <path d="M52 38 q4 6 0 12 M62 37 q4 6 0 12 M72 38 q4 6 0 12" fill="none" stroke="#9f88b3" strokeWidth={2.5} strokeLinecap="round" />
-      <path d="M90 26 L92 8 L104 20 Z" fill="#b9a4c9" />
-      <path d="M108 20 L118 8 L120 28 Z" fill="#b9a4c9" />
-      <path d="M93 13 L95 21 L100 19 Z M114 13 L113 22 L117 22 Z" fill="#f7a8c0" />
-      <circle cx={106} cy={38} r={17} fill="#b9a4c9" />
-      <circle cx={110} cy={34} r={2.8} fill="#3a2430" />
-      <circle cx={111} cy={33} r={0.9} fill="#fff" />
-      <path d="M118 40 l3 2 l-3 2" fill="#ff8fb0" />
-      <path d="M116 46 q2.5 3 5 0" fill="none" stroke="#3a2430" strokeWidth={1.4} strokeLinecap="round" />
-      <path d="M120 44 l9 -2 M120 46 l9 1" stroke="#fff" strokeWidth={1} opacity={0.8} />
-      <ellipse cx={101} cy={44} rx={4.5} ry={2.6} fill="#ff8fb0" opacity={0.6} />
-    </svg>
-  );
-}
-
-const ANIMALS = [Corgi, Puppy, Kitty];
-
-type Walk = { id: number; kind: number; dir: 1 | -1; size: number };
+type Walk = { id: number; kind: number; dir: 1 | -1; x: number; y: number };
 
 function Walker({ w, onDone }: { w: Walk; onDone: () => void }) {
-  const Animal = ANIMALS[w.kind];
+  const c = CRITTERS[w.kind];
   const [hearts, setHearts] = useState(false);
   useEffect(() => {
-    const h = setTimeout(() => setHearts(true), 3900);
-    const d = setTimeout(onDone, 9500);
+    const h = setTimeout(() => setHearts(true), c.dur * 450);
+    const d = setTimeout(onDone, c.dur * 1000 + 300);
     return () => {
       clearTimeout(h);
       clearTimeout(d);
     };
-  }, [onDone]);
+  }, [onDone, c.dur]);
 
   const from = w.dir > 0 ? "-30vw" : "110vw";
-  const mid = w.dir > 0 ? "38vw" : "48vw";
-  const to = w.dir > 0 ? "115vw" : "-35vw";
+  const to = w.dir > 0 ? "112vw" : "-35vw";
+  const mid = "40vw";
+  const flip = w.dir > 0 ? -1 : 1; // рисунки смотрят влево
+
+  // траектории для разных характеров
+  let pos: TargetAndTransition = {};
+  let body: TargetAndTransition = {};
+  let bodyT: Transition = { duration: 0.5, repeat: Infinity, ease: "easeInOut" };
+  const lin = { duration: c.dur, ease: "linear" as const };
+  switch (c.mode) {
+    case "walk": // топает, останавливается посередине и подпрыгивает
+      pos = { x: [from, mid, mid, to], y: [0, 0, -22, 0, 0], transition: { x: { ...lin, times: [0, 0.42, 0.6, 1] }, y: { duration: c.dur, times: [0, 0.45, 0.5, 0.55, 1] } } };
+      body = { rotate: [-4, 4, -4], y: [0, -4, 0] };
+      break;
+    case "run": // несётся вприпрыжку
+      pos = { x: [from, to], transition: { x: lin } };
+      body = { y: [0, -16, 0], rotate: [6, -4, 6] };
+      bodyT = { duration: 0.32, repeat: Infinity, ease: "easeOut" };
+      break;
+    case "leap": // котик прыгает дугами
+      pos = { x: [from, "20vw", "55vw", to], y: [0, -150, 0, -110, 0, -80, 0], transition: { x: { ...lin, times: [0, 0.3, 0.65, 1] }, y: { duration: c.dur, ease: "easeInOut" } } };
+      body = { rotate: [-10, 12, -10] };
+      bodyT = { duration: c.dur / 3, repeat: Infinity };
+      break;
+    case "fly": // бабочка порхает волной
+      pos = { x: [from, to], y: [0, -60, 20, -80, 10, -40, 0], transition: { x: lin, y: { duration: c.dur, ease: "easeInOut" } } };
+      body = { scaleY: [1, 0.55, 1] };
+      bodyT = { duration: 0.28, repeat: Infinity };
+      break;
+    case "dart": // стрекоза: рывками
+      pos = { x: [from, "20vw", "35vw", "70vw", to], y: [0, -30, 30, -10, 0], transition: { x: { duration: c.dur, ease: "easeInOut" }, y: { duration: c.dur } } };
+      body = { rotate: [-6, 6, -6] };
+      bodyT = { duration: 0.15, repeat: Infinity };
+      break;
+    case "hang": // ленивец спускается сверху, качается и уползает обратно
+      pos = { y: ["-110%", "0%", "0%", "-110%"], transition: { y: { duration: c.dur, times: [0, 0.2, 0.8, 1], ease: "easeInOut" } } };
+      body = { rotate: [-8, 8, -8] };
+      bodyT = { duration: 2.4, repeat: Infinity, ease: "easeInOut" };
+      break;
+    case "peek": // выглядывает снизу из угла
+      pos = { y: ["100%", "18%", "18%", "100%"], transition: { y: { duration: c.dur, times: [0, 0.2, 0.8, 1], ease: "easeOut" } } };
+      body = { rotate: [-6, 6, -6] };
+      bodyT = { duration: 1.2, repeat: Infinity, ease: "easeInOut" };
+      break;
+  }
+
+  const placement: React.CSSProperties =
+    c.mode === "hang"
+      ? { top: 0, left: `${w.x}%` }
+      : c.mode === "peek"
+        ? { bottom: 0, left: `${w.x}%` }
+        : c.mode === "fly" || c.mode === "dart"
+          ? { top: `${w.y}%`, left: 0 }
+          : { bottom: 4, left: 0 };
+
   return (
-    <motion.div
-      className="absolute bottom-1"
-      style={{ width: w.size, height: w.size * 0.7, left: 0 }}
-      initial={{ x: from }}
-      animate={{ x: [from, mid, mid, to], y: [0, 0, -26, 0, -14, 0, 0] }}
-      transition={{
-        x: { duration: 9, times: [0, 0.4, 0.62, 1], ease: "linear" },
-        y: { duration: 9, times: [0, 0.42, 0.46, 0.5, 0.54, 0.58, 1], ease: "easeOut" },
-      }}
-    >
-      <motion.div
-        className="size-full"
-        style={{ scaleX: w.dir }}
-        animate={{ rotate: [0, -3, 0, 3, 0] }}
-        transition={{ duration: 0.32, repeat: Infinity }}
-      >
-        <Animal />
+    <motion.div className="absolute" style={{ ...placement, height: c.h }} animate={pos}>
+      <motion.div className="h-full" style={{ scaleX: c.mode === "hang" || c.mode === "peek" ? 1 : flip, transformOrigin: c.mode === "hang" ? "50% 0%" : "50% 100%" }} animate={body} transition={bodyT}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={assetUrl(c.id)} alt="" draggable={false} className="h-full w-auto max-w-none" />
       </motion.div>
       <AnimatePresence>
-        {hearts && (
+        {hearts && c.mode !== "hang" && (
           <motion.svg
             viewBox="0 0 24 24"
-            className="absolute -top-6 left-1/2 size-7 fill-[#ff7aa2]"
+            className="absolute -top-6 left-1/2 size-6 fill-[#ff7aa2]"
             initial={{ y: 10, opacity: 0, scale: 0.4 }}
             animate={{ y: -30, opacity: [0, 1, 1, 0], scale: 1.1 }}
             transition={{ duration: 1.6 }}
@@ -251,9 +212,15 @@ export function FunLayer({ walkers = true }: { walkers?: boolean }) {
       const id = ++n.current;
       setWalks((w) => [
         ...w,
-        { id, kind: Math.floor(Math.random() * ANIMALS.length), dir: Math.random() > 0.5 ? 1 : -1, size: 92 + Math.random() * 30 },
+        {
+          id,
+          kind: Math.floor(Math.random() * CRITTERS.length),
+          dir: Math.random() > 0.5 ? 1 : -1,
+          x: Math.random() > 0.5 ? 4 + Math.random() * 18 : 62 + Math.random() * 18,
+          y: 18 + Math.random() * 50,
+        },
       ]);
-      t = setTimeout(spawn, 15000 + Math.random() * 12000);
+      t = setTimeout(spawn, 11000 + Math.random() * 10000);
     };
     t = setTimeout(spawn, 3500); // первый гость — вскоре после открытия акта
     return () => clearTimeout(t);

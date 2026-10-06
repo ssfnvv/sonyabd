@@ -687,5 +687,65 @@
   "group": "cat",
   "w": 328,
   "h": 377
+ },
+ "doodle-turtle": {
+  "group": "decor",
+  "w": 531,
+  "h": 476
+ },
+ "doodle-cat": {
+  "group": "decor",
+  "w": 276,
+  "h": 563
+ },
+ "doodle-dragonfly": {
+  "group": "decor",
+  "w": 390,
+  "h": 315
+ },
+ "doodle-butterfly": {
+  "group": "decor",
+  "w": 321,
+  "h": 249
+ },
+ "doodle-sloth": {
+  "group": "decor",
+  "w": 566,
+  "h": 628
+ },
+ "doodle-leapcat": {
+  "group": "decor",
+  "w": 577,
+  "h": 514
+ },
+ "doodle-koala": {
+  "group": "decor",
+  "w": 469,
+  "h": 521
+ },
+ "doodle-croc": {
+  "group": "decor",
+  "w": 844,
+  "h": 445
+ },
+ "doodle-wolf": {
+  "group": "decor",
+  "w": 662,
+  "h": 370
+ },
+ "doodle-giraffe": {
+  "group": "decor",
+  "w": 381,
+  "h": 776
+ },
+ "doodle-lion": {
+  "group": "decor",
+  "w": 650,
+  "h": 513
+ },
+ "doodle-elephant": {
+  "group": "decor",
+  "w": 599,
+  "h": 442
  }
 }
