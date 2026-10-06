@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { copy } from "@/content/copy";
 import { cn } from "../ui";
+import { FunLayer } from "./FunLayer";
 
 export function ActShell({
   back,
@@ -33,6 +34,8 @@ export function ActShell({
           <ArrowLeft className="size-5" />
         </Link>
       )}
+      {/* собачки/котики бегают только на светлых экранах — трейлер и ночной таймер не трогаем */}
+      <FunLayer walkers={!dark} />
       <motion.div className="relative z-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
         {children}
       </motion.div>
