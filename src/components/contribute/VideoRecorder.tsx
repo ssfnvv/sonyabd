@@ -8,6 +8,9 @@ import { copy } from "@/content/copy";
 import { extFromMime, submit, uploadFile, type Friend } from "@/lib/client-api";
 import { useRecorder } from "@/lib/useRecorder";
 import { Button, Note, Screen, fmtTime } from "../ui";
+import { AboutNote } from "./AboutNote";
+import { TASK_CATS } from "./TaskMenu";
+
 
 const t = copy.contribute;
 const MAX_SEC = 15;
@@ -100,6 +103,7 @@ export function VideoRecorder({ friend, onBack, onDone }: { friend: Friend; onBa
       }}
       backLabel={t.back}
     >
+      <AboutNote text={t.about.video} cat={TASK_CATS.video} />
       <p className="font-semibold leading-snug">{t.videoHint}</p>
 
       <div className="relative aspect-video w-full overflow-hidden rounded-3xl bg-pink-soft ring-2 ring-pink">

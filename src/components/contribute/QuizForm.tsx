@@ -8,12 +8,16 @@ import { Check } from "lucide-react";
 import { copy } from "@/content/copy";
 import { submit, type Friend } from "@/lib/client-api";
 import { Button, Input, Note, Screen, TextArea } from "../ui";
+import { AboutNote } from "./AboutNote";
+import { TASK_CATS } from "./TaskMenu";
+
 
 const t = copy.contribute;
 
 export function QuizForm({ friend, onBack, onDone }: { friend: Friend; onBack: () => void; onDone: () => void }) {
   return (
     <Screen title={t.sections.quiz} onBack={onBack} backLabel={t.back}>
+      <AboutNote text={t.about.quiz} cat={TASK_CATS.quiz} />
       <RoundOne friend={friend} onDone={onDone} />
       <RoundTwo friend={friend} onDone={onDone} />
     </Screen>

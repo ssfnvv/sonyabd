@@ -5,6 +5,9 @@ import { useState } from "react";
 import { copy } from "@/content/copy";
 import { submit, type Friend } from "@/lib/client-api";
 import { Button, Note, Screen, TextArea } from "../ui";
+import { AboutNote } from "./AboutNote";
+import { TASK_CATS } from "./TaskMenu";
+
 
 const t = copy.contribute;
 
@@ -29,6 +32,7 @@ export function PredictionForm({ friend, onBack, onDone }: { friend: Friend; onB
 
   return (
     <Screen title={t.sections.prediction} onBack={onBack} backLabel={t.back}>
+      <AboutNote text={t.about.prediction} cat={TASK_CATS.prediction} />
       {/* «Конверт»: кремовый лист с розовой печатью */}
       <div className="relative rounded-[2rem] bg-[#fffaf3] p-5 pb-10 shadow-[0_10px_30px_-12px_#e88aa866] ring-2 ring-cream-deep">
         <TextArea

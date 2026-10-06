@@ -12,6 +12,9 @@ import { STICKERS, StickerSvg } from "../stickers";
 import { assetsByGroup, assetThumbUrl, type AssetGroup } from "@/content/assets";
 import { CardElementView, elementStyle } from "../CardView";
 import { Button, Note, Screen, TextArea, cn } from "../ui";
+import { AboutNote } from "./AboutNote";
+import { TASK_CATS } from "./TaskMenu";
+
 
 const t = copy.contribute;
 
@@ -241,6 +244,7 @@ export function CardEditor({ friend, onBack, onDone }: { friend: Friend; onBack:
 
   return (
     <Screen title={t.sections.card} onBack={onBack} backLabel={t.back}>
+      <AboutNote text={t.about.card} cat={TASK_CATS.card} />
       {/* Год */}
       <div className="flex flex-col gap-2">
         <p className="text-sm font-semibold">{t.yearHint}</p>

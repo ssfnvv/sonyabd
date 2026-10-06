@@ -8,6 +8,9 @@ import { copy } from "@/content/copy";
 import { extFromMime, submit, uploadFile, type Friend } from "@/lib/client-api";
 import { useRecorder } from "@/lib/useRecorder";
 import { Button, Note, Screen, cn, fmtTime } from "../ui";
+import { AboutNote } from "./AboutNote";
+import { TASK_CATS } from "./TaskMenu";
+
 
 const t = copy.contribute;
 
@@ -22,6 +25,7 @@ export function VoiceRecorder({ friend, onBack, onDone }: { friend: Friend; onBa
   if (!type) {
     return (
       <Screen title={t.sections.voice} onBack={onBack} backLabel={t.back}>
+        <AboutNote text={t.about.voice} cat={TASK_CATS.voice} />
         {(Object.keys(LIMITS) as AudioType[]).map((k) => {
           const Icon = ICONS[k];
           return (
@@ -33,7 +37,10 @@ export function VoiceRecorder({ friend, onBack, onDone }: { friend: Friend; onBa
               <span className="grid size-12 shrink-0 place-items-center rounded-full bg-pink-soft">
                 <Icon className="size-6" />
               </span>
-              <span className="font-semibold leading-snug">{t.voiceTypes[k]}</span>
+              <span className="flex flex-col gap-0.5">
+                <span className="font-display text-lg font-bold leading-tight">{t.voiceTypes[k]}</span>
+                <span className="text-sm leading-snug text-rose-ink/75">{t.voiceTypeHints[k]}</span>
+              </span>
             </button>
           );
         })}
@@ -97,6 +104,7 @@ function VoiceRecordStep({
 
   return (
     <Screen title={t.voiceTypes[type]} onBack={onBack} backLabel={t.back}>
+      <p className="-mt-2 text-sm font-semibold leading-snug text-rose-ink/75">{t.voiceTypeHints[type]}</p>
       <div className="flex flex-col items-center gap-6 rounded-[2rem] bg-white/85 px-5 py-8 ring-2 ring-pink">
         <LevelBars stream={rec.state === "recording" ? rec.stream : null} />
 
