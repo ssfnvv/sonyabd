@@ -6,6 +6,16 @@ let ctx: AudioContext | null = null;
 
 export function getAudioContext(): AudioContext {
   if (!ctx) {
+    // iPhone по умолчанию глушит веб-звук беззвучным режимом. Просим режим «воспроизведение»,
+    // как у музыки и видео (поддерживается в iOS 16.4+)
+    const session = (navigator as unknown as { audioSession?: { type: string } }).audioSession;
+    if (session) {
+      try {
+        session.type = "playback";
+      } catch {
+        /* не поддерживается — ничего страшного */
+      }
+    }
     const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     ctx = new AC();
   }
