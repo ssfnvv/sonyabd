@@ -3,7 +3,7 @@
 // Акт 2: один большой постер в серебряной рамке (по референсу владелицы).
 // Фото друзей — плотной мозаикой на всю площадь листа, разных размеров, почти без зазоров.
 // Между фото — плитки с историями журнальным шрифтом с засечками и подписью-именем.
-// Если один год выбрали 3+ человека — крупная цифра года с засечками, как «23» на референсе.
+// Крупная цифра года с засечками (как «23» на референсе) — только у 4 самых популярных лет, где 3+ человека.
 // Стикеры и маркерные каракули — совсем чуть-чуть, чтобы не перегружать.
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -24,6 +24,7 @@ import { Marker, type MarkerKind } from "@/components/acts/Marker";
 
 const t = copy.act2;
 const YEAR_MIN_PEOPLE = 3;
+const YEAR_MAX_SHOWN = 4;
 
 type Card = { id: string; year: number; story: string; elements: CardElement[]; name: string };
 
@@ -42,11 +43,19 @@ const isWide = (aspect: number, seed: string) => aspect < 0.85 && hash(seed + "w
 function buildTiles(cards: Card[]): TileT[] {
   const count = new Map<number, number>();
   cards.forEach((c) => count.set(c.year, (count.get(c.year) ?? 0) + 1));
+  // крупные цифры — только у самых популярных лет (не больше YEAR_MAX_SHOWN), чтобы мозаика не дробилась
+  const topYears = new Set(
+    [...count.entries()]
+      .filter(([, n]) => n >= YEAR_MIN_PEOPLE)
+      .sort((x, y) => y[1] - x[1] || x[0] - y[0])
+      .slice(0, YEAR_MAX_SHOWN)
+      .map(([y]) => y),
+  );
   const yearShown = new Set<number>();
   const tiles: TileT[] = [];
 
   cards.forEach((card, ci) => {
-    if ((count.get(card.year) ?? 0) >= YEAR_MIN_PEOPLE && !yearShown.has(card.year)) {
+    if (topYears.has(card.year) && !yearShown.has(card.year)) {
       yearShown.add(card.year);
       tiles.push({ kind: "year", key: `y${card.year}`, year: card.year, wide: true });
     }
