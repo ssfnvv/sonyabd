@@ -14,9 +14,18 @@ const VIDEO_TYPES = [
   "video/mp4",
 ];
 
-function pickMime(kind: "audio" | "video"): string | undefined {
-  if (typeof MediaRecorder === "undefined") return undefined;
-  return (kind === "audio" ? AUDIO_TYPES : VIDEO_TYPES).find((t) => MediaRecorder.isTypeSupported(t));
+// Все форматы, которые браузер говорит, что умеет, — по порядку предпочтения.
+// Пустая строка в конце = «формат на выбор браузера».
+function supportedMimes(kind: "audio" | "video"): string[] {
+  if (typeof MediaRecorder === "undefined") return [];
+  const list = (kind === "audio" ? AUDIO_TYPES : VIDEO_TYPES).filter((t) => {
+    try {
+      return MediaRecorder.isTypeSupported(t);
+    } catch {
+      return false;
+    }
+  });
+  return [...list, ""];
 }
 
 export type RecState = "idle" | "preview" | "recording" | "done";
@@ -34,6 +43,7 @@ export function useRecorder(kind: "audio" | "video", maxSec: number) {
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAt = useRef(0);
   const streamRef = useRef<MediaStream | null>(null);
+  const userStopped = useRef(false); // true — запись остановил человек (или лимит времени)
 
   const stopTracks = useCallback(() => {
     streamRef.current?.getTracks().forEach((tr) => tr.stop());
@@ -72,40 +82,82 @@ export function useRecorder(kind: "audio" | "video", maxSec: number) {
   );
 
   const stop = useCallback(() => {
+    userStopped.current = true;
     if (timer.current) clearInterval(timer.current);
     timer.current = null;
     if (recorder.current?.state === "recording") recorder.current.stop();
   }, []);
 
+  // Некоторые браузеры (например, Яндекс на Mac) говорят «умею MP4», начинают запись
+  // и через секунду падают. Поэтому: если запись оборвалась сама, без нажатия «Стоп»,
+  // сразу пробуем следующий формат из списка — незаметно для человека.
+  const startWith = useCallback(
+    (s: MediaStream, mimes: string[], i: number) => {
+      const mimeType = mimes[i];
+      let rec: MediaRecorder;
+      try {
+        rec = new MediaRecorder(s, {
+          ...(mimeType ? { mimeType } : {}),
+          // битрейт держим скромным, чтобы файлы быстро грузились по мобильному интернету
+          ...(kind === "video" ? { videoBitsPerSecond: 1_500_000, audioBitsPerSecond: 96_000 } : { audioBitsPerSecond: 96_000 }),
+        });
+      } catch {
+        if (i + 1 < mimes.length) return startWith(s, mimes, i + 1);
+        setError("unsupported");
+        return;
+      }
+      const startedThis = Date.now();
+      const localChunks: Blob[] = [];
+      rec.ondataavailable = (e) => {
+        if (e.data.size > 0) localChunks.push(e.data);
+      };
+      rec.onerror = () => {
+        /* обработаем в onstop */
+      };
+      rec.onstop = () => {
+        const crashed = !userStopped.current && Date.now() - startedThis < maxSec * 1000 - 300;
+        const empty = localChunks.reduce((n, c) => n + c.size, 0) < 1000;
+        if ((crashed || empty) && i + 1 < mimes.length && recorder.current === rec) {
+          // формат не взлетел — пробуем следующий, таймер начинаем заново
+          startWith(s, mimes, i + 1);
+          return;
+        }
+        if (timer.current) clearInterval(timer.current);
+        timer.current = null;
+        const type = rec.mimeType || mimeType || (kind === "audio" ? "audio/webm" : "video/webm");
+        chunks.current = localChunks;
+        setBlob(new Blob(localChunks, { type: type.split(";")[0] }));
+        setSeconds((Date.now() - startedAt.current) / 1000);
+        setState("done");
+        if (kind === "audio") stopTracks(); // микрофон гасим сразу, камеру — при уходе с экрана
+      };
+      recorder.current = rec;
+      try {
+        rec.start(250);
+      } catch {
+        if (i + 1 < mimes.length) return startWith(s, mimes, i + 1);
+        setError("unsupported");
+        return;
+      }
+      startedAt.current = Date.now();
+      setSeconds(0);
+      setState("recording");
+    },
+    [kind, maxSec, stopTracks],
+  );
+
   const start = useCallback(async () => {
     const s = streamRef.current ?? (await open());
     if (!s) return;
-    const mimeType = pickMime(kind);
-    const rec = new MediaRecorder(s, {
-      ...(mimeType ? { mimeType } : {}),
-      // битрейт держим скромным, чтобы файлы быстро грузились по мобильному интернету
-      ...(kind === "video" ? { videoBitsPerSecond: 2_000_000, audioBitsPerSecond: 96_000 } : { audioBitsPerSecond: 96_000 }),
-    });
-    chunks.current = [];
-    rec.ondataavailable = (e) => e.data.size > 0 && chunks.current.push(e.data);
-    rec.onstop = () => {
-      const type = rec.mimeType || mimeType || (kind === "audio" ? "audio/webm" : "video/webm");
-      setBlob(new Blob(chunks.current, { type: type.split(";")[0] }));
-      setSeconds((Date.now() - startedAt.current) / 1000);
-      setState("done");
-      if (kind === "audio") stopTracks(); // микрофон гасим сразу, камеру — при уходе с экрана
-    };
-    recorder.current = rec;
-    rec.start(250);
-    startedAt.current = Date.now();
-    setSeconds(0);
-    setState("recording");
+    userStopped.current = false;
+    startWith(s, supportedMimes(kind), 0);
+    if (timer.current) clearInterval(timer.current);
     timer.current = setInterval(() => {
       const sec = (Date.now() - startedAt.current) / 1000;
       setSeconds(sec);
       if (sec >= maxSec) stop();
     }, 200);
-  }, [kind, maxSec, open, stop, stopTracks]);
+  }, [kind, maxSec, open, startWith]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const reset = useCallback(() => {
     stop();
