@@ -19,7 +19,7 @@ import { PeekCat } from "@/components/acts/PeekCat";
 
 import { PhotoPhone } from "@/components/acts/PhotoPhone";
 import { Conference } from "@/components/acts/Conference";
-import { assetUrl } from "@/content/assets";
+import { assetUrl, ASSETS } from "@/content/assets";
 import { hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
 
@@ -126,10 +126,13 @@ export default function Act4() {
   const inConference = phase === "conference" || (phase === "done" && finals.length > 0);
 
   return (
-    <ActShell back="/act3" className="scrap-desk">
+    <ActShell back="/act3" className="scrap-desk" quiet>
       <Doodles seed="act4" count={11} kinds={["ring", "heart", "bolt", "star", "squiggle", "sparkle"]} />
       {/* котик пугается звонка */}
-      {phase === "ringing" && <PeekCat key={`shock${idx}`} cat="cat-shock" edge="right" top="34%" size={110} delay={0.4} />}
+      {/* на звонок по очереди реагируют: орущий парень и испуганный котик */}
+      {phase === "ringing" && (
+        <PeekCat key={`shock${idx}`} cat={idx % 2 ? "cat-shock" : "meme-scream"} edge="right" top="34%" size={idx % 2 ? 110 : 120} delay={0.4} />
+      )}
       {phase === "talking" && <PeekCat key={`listen${idx}`} cat="cat-wink" edge="left" top="30%" size={105} delay={0.6} />}
       {inConference && <PeekCat cat="cat-orange" edge="bottom-left" size={120} delay={0.8} />}
       {inConference && <PeekCat cat="cat-tongue" edge="bottom-right" size={120} delay={1.3} />}
@@ -198,11 +201,13 @@ export default function Act4() {
 // Кнопка «отклонить», которую невозможно нажать: при приближении пальца отпрыгивает
 function RunawayButton({ seed }: { seed: string }) {
   const [pos, setPos] = useState({ x: 0.72, y: 0.4 });
+  const [smirk, setSmirk] = useState(0); // счётчик побегов — на каждый ухмыляется Роблокс
   const jumps = useRef(0);
   const flee = (e: React.SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
     jumps.current++;
+    setSmirk(jumps.current);
     const r = (k: number) => hash(`${seed}${jumps.current}${k}`);
     // прыгаем в случайную точку подальше от текущей
     setPos((p) => {
@@ -212,6 +217,23 @@ function RunawayButton({ seed }: { seed: string }) {
     });
   };
   return (
+    <>
+    {/* ухмылка Роблокс: «не выйдет» — появляется с той стороны, куда кнопка не убежала */}
+    <AnimatePresence>
+      {smirk > 0 && ASSETS["meme-roblox"] && (
+        <motion.img
+          key={smirk}
+          src={assetUrl("meme-roblox")}
+          alt=""
+          className="pointer-events-none absolute top-1 w-24"
+          style={{ left: pos.x > 0.5 ? "6%" : "auto", right: pos.x > 0.5 ? "auto" : "6%" }}
+          initial={{ scale: 0, rotate: -20, opacity: 0 }}
+          animate={{ scale: 1, rotate: 0, opacity: [0, 1, 1, 0] }}
+          exit={{ opacity: 0 }}
+          transition={{ type: "spring", damping: 10, opacity: { duration: 1.6, times: [0, 0.1, 0.75, 1] } }}
+        />
+      )}
+    </AnimatePresence>
     <motion.button
       aria-label="decline"
       onPointerDown={flee}
@@ -225,5 +247,6 @@ function RunawayButton({ seed }: { seed: string }) {
     >
       <PhoneOff className="size-6" />
     </motion.button>
+    </>
   );
 }

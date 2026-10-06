@@ -13,8 +13,10 @@ export function ActShell({
   back,
   dark,
   className,
+  quiet,
   children,
 }: {
+  quiet?: boolean; // без случайных мемов-гостей (там, где слушают голосовые)
   back?: string; // куда ведёт «назад»
   dark?: boolean; // светлая иконка на тёмном фоне
   className?: string;
@@ -35,7 +37,7 @@ export function ActShell({
         </Link>
       )}
       {/* собачки/котики бегают только на светлых экранах — трейлер и ночной таймер не трогаем */}
-      <FunLayer walkers={!dark} />
+      <FunLayer walkers={!dark} memes={!quiet} />
       <motion.div className="relative z-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
         {children}
       </motion.div>

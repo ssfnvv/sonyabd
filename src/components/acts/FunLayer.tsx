@@ -122,6 +122,31 @@ function Walker({ w, onDone }: { w: Walk; onDone: () => void }) {
   );
 }
 
+// ---------- мем-гость: изредка выглядывает сбоку, кивает и прячется ----------
+const PEEK_MEMES = ["meme-dog", "meme-shrek", "meme-rosecat", "meme-roblox", "meme-banana", "meme-avocado", "meme-happymeal"];
+type MemePeekT = { id: number; meme: string; side: 1 | -1; top: number };
+
+function MemePeek({ p, onDone }: { p: MemePeekT; onDone: () => void }) {
+  useEffect(() => {
+    const d = setTimeout(onDone, 4200);
+    return () => clearTimeout(d);
+  }, [onDone]);
+  const out = p.side > 0 ? "110%" : "-110%";
+  const peek = p.side > 0 ? "30%" : "-30%";
+  return (
+    <motion.div
+      className="absolute w-24"
+      style={{ top: `${p.top}%`, [p.side > 0 ? "right" : "left"]: 0 }}
+      initial={{ x: out, rotate: 0 }}
+      animate={{ x: [out, peek, peek, out], rotate: [0, -14 * p.side, -6 * p.side, 0] }}
+      transition={{ duration: 4, times: [0, 0.18, 0.82, 1], ease: "easeInOut" }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={assetUrl(p.meme)} alt="" draggable={false} className="w-full drop-shadow-[0_6px_8px_rgba(90,30,50,.28)]" />
+    </motion.div>
+  );
+}
+
 // ---------- Y2K-звёздочки ----------
 const HOLO = ["#ff9ce6", "#9cf3ff", "#fff59c", "#c7a6ff", "#ffffff", "#ffb3d1"];
 const STAR4 = "M12 0 Q13.5 10.5 24 12 Q13.5 13.5 12 24 Q10.5 13.5 0 12 Q10.5 10.5 12 0Z";
@@ -201,8 +226,9 @@ function ChromeSparkles() {
   );
 }
 
-export function FunLayer({ walkers = true }: { walkers?: boolean }) {
+export function FunLayer({ walkers = true, memes = true }: { walkers?: boolean; memes?: boolean }) {
   const [walks, setWalks] = useState<Walk[]>([]);
+  const [peeks, setPeeks] = useState<MemePeekT[]>([]);
   const n = useRef(0);
 
   useEffect(() => {
@@ -226,11 +252,28 @@ export function FunLayer({ walkers = true }: { walkers?: boolean }) {
     return () => clearTimeout(t);
   }, [walkers]);
 
+  // мем-гости — редко: первый через ~25 с, дальше раз в 40–65 с
+  useEffect(() => {
+    if (!walkers || !memes) return;
+    let t: ReturnType<typeof setTimeout>;
+    const spawn = () => {
+      const id = ++n.current;
+      const meme = PEEK_MEMES[Math.floor(Math.random() * PEEK_MEMES.length)];
+      setPeeks((p) => [...p, { id, meme, side: Math.random() > 0.5 ? 1 : -1, top: 25 + Math.random() * 40 }]);
+      t = setTimeout(spawn, 40000 + Math.random() * 25000);
+    };
+    t = setTimeout(spawn, 22000 + Math.random() * 8000);
+    return () => clearTimeout(t);
+  }, [walkers, memes]);
+
   return (
     <div className="pointer-events-none fixed inset-0 z-[25] overflow-hidden" aria-hidden>
       <ChromeSparkles />
       {walks.map((w) => (
         <Walker key={w.id} w={w} onDone={() => setWalks((all) => all.filter((x) => x.id !== w.id))} />
+      ))}
+      {peeks.map((p) => (
+        <MemePeek key={p.id} p={p} onDone={() => setPeeks((all) => all.filter((x) => x.id !== p.id))} />
       ))}
       <TapSparkles />
     </div>

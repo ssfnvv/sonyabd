@@ -747,5 +747,125 @@
   "group": "decor",
   "w": 599,
   "h": 442
+ },
+ "meme-happymeal": {
+  "group": "decor",
+  "w": 312,
+  "h": 346
+ },
+ "meme-shrek": {
+  "group": "decor",
+  "w": 388,
+  "h": 488
+ },
+ "meme-rosecat": {
+  "group": "decor",
+  "w": 430,
+  "h": 438
+ },
+ "meme-nailgirl": {
+  "group": "decor",
+  "w": 417,
+  "h": 413
+ },
+ "meme-scream": {
+  "group": "decor",
+  "w": 373,
+  "h": 520
+ },
+ "meme-dog": {
+  "group": "decor",
+  "w": 332,
+  "h": 434
+ },
+ "meme-strawberry": {
+  "group": "decor",
+  "w": 244,
+  "h": 340
+ },
+ "meme-banana": {
+  "group": "decor",
+  "w": 168,
+  "h": 355
+ },
+ "meme-avocado": {
+  "group": "decor",
+  "w": 244,
+  "h": 324
+ },
+ "meme-waffle": {
+  "group": "decor",
+  "w": 328,
+  "h": 310
+ },
+ "meme-roblox": {
+  "group": "decor",
+  "w": 360,
+  "h": 252
+ },
+ "meme-ura": {
+  "group": "decor",
+  "w": 640,
+  "h": 362
+ },
+ "meme-bro": {
+  "group": "decor",
+  "w": 627,
+  "h": 420
+ },
+ "meme-zhit": {
+  "group": "decor",
+  "w": 640,
+  "h": 429
+ },
+ "meme-niche": {
+  "group": "decor",
+  "w": 640,
+  "h": 475
+ },
+ "meme-smugcats": {
+  "group": "decor",
+  "w": 640,
+  "h": 485
+ },
+ "meme-beda": {
+  "group": "decor",
+  "w": 513,
+  "h": 480
+ },
+ "meme-unicorn": {
+  "group": "decor",
+  "w": 640,
+  "h": 425
+ },
+ "meme-crycats": {
+  "group": "decor",
+  "w": 640,
+  "h": 407
+ },
+ "meme-romance": {
+  "group": "decor",
+  "w": 640,
+  "h": 481
+ },
+ "meme-playlist": {
+  "group": "decor",
+  "w": 640,
+  "h": 521
+ },
+ "meme-flowercat": {
+  "group": "decor",
+  "w": 467,
+  "h": 520
+ },
+ "meme-hehe": {
+  "group": "decor",
+  "w": 324,
+  "h": 438
+ },
+ "meme-nothehe": {
+  "group": "decor",
+  "w": 324,
+  "h": 438
  }
 }

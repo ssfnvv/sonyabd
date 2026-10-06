@@ -13,6 +13,7 @@ import { playDing, unlockAudio } from "@/lib/sound";
 import { ActShell } from "@/components/acts/ActShell";
 import { Doodles } from "@/components/acts/Doodles";
 import { PeekCat } from "@/components/acts/PeekCat";
+import { Meme } from "@/components/acts/Meme";
 
 
 const t = copy.act1;
@@ -80,13 +81,19 @@ export default function Act1() {
 
       {/* ночью — светлые звёздочки, после полуночи — цветные дудлы и котики в колпаках */}
       {!celebrating ? (
-        <Doodles seed="act1-night" count={9} kinds={["star", "sparkle", "dots", "cloud"]} light />
+        <>
+          <Doodles seed="act1-night" count={9} kinds={["star", "sparkle", "dots", "cloud"]} light />
+          {/* котик в коробке Хэппи Мила ждёт полуночи вместе с Соней */}
+          <PeekCat cat="meme-happymeal" edge="bottom-right" size={115} delay={2} />
+        </>
       ) : (
         <>
           <Doodles seed="act1-party" count={12} kinds={["heart", "star", "sparkle", "crown", "swirl", "smile"]} />
           <PeekCat cat="cat-kitten-cake" edge="bottom-left" size={130} delay={1.2} />
           <PeekCat cat="cat-cake" edge="bottom-right" size={130} delay={1.6} />
           <PeekCat cat="cat-clown" edge="left" top="16%" size={110} delay={2.2} />
+          {/* мем «УРААА я не знаю почему но я рад» выскакивает вместе с конфетти */}
+          <Meme id="meme-ura" className="fixed right-[5%] top-[9%] w-[46%] max-w-[230px]" rot={6} delay={0.9} />
         </>
       )}
       <div className="relative z-10 mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-10 px-6 text-center">

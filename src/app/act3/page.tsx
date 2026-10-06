@@ -16,6 +16,7 @@ import { assetUrl, ASSETS } from "@/content/assets";
 import { ActShell } from "@/components/acts/ActShell";
 import { Doodles } from "@/components/acts/Doodles";
 import { PeekCat } from "@/components/acts/PeekCat";
+import { Meme } from "@/components/acts/Meme";
 
 import { Cassette } from "@/components/acts/Cassette";
 import { cn, fmtTime } from "@/components/ui";
@@ -116,9 +117,8 @@ export default function Act3() {
   const tape = ASSETS["tape"] ? assetUrl("tape") : null;
 
   return (
-    <ActShell back="/act2" className="scrap-desk">
+    <ActShell back="/act2" className="scrap-desk" quiet>
       <Doodles seed="act3" count={12} kinds={["note", "heart", "sparkle", "squiggle", "star"]} />
-      <PeekCat cat="cat-glasses" edge="right" top="30%" size={115} delay={1.2} />
       <PeekCat cat="cat-lick" edge="bottom-left" size={120} delay={2} />
       <div className="mx-auto flex max-w-md flex-col items-center gap-7 px-5 pb-20 pt-20">
         {/* кассета */}
@@ -132,6 +132,8 @@ export default function Act3() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={tape} alt="" className="pointer-events-none absolute -top-4 left-1/2 z-10 w-[40%] -translate-x-1/2 rotate-[4deg]" />
           )}
+          {/* котик в наушниках слушает микстейп вместе с Соней */}
+          <Meme id="meme-flowercat" className="-right-3 -top-16 w-[30%] max-w-[130px]" rot={8} delay={0.8} />
           <Cassette progress={loading ? 0.35 : progress} playing={playing || loading} label={current >= 0 ? clips?.[current]?.name : undefined} />
         </motion.div>
 
@@ -199,6 +201,7 @@ export default function Act3() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={tape} alt="" className="pointer-events-none absolute -top-4 left-[8%] z-10 w-[34%] -rotate-[8deg]" />
               )}
+              <Meme id="meme-playlist" className="-right-6 -top-14 z-20 w-[46%] max-w-[200px]" rot={7} delay={0.6} />
               {/* тетрадный листок: линейки и поля рисуются CSS — растягивается под любое число имён */}
               <ol
                 className="notebook-page relative py-6 pl-14 pr-5"

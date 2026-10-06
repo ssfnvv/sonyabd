@@ -19,6 +19,7 @@ import { ActShell } from "@/components/acts/ActShell";
 import { Jar } from "@/components/acts/Jar";
 import { Doodles } from "@/components/acts/Doodles";
 import { PeekCat } from "@/components/acts/PeekCat";
+import { Meme } from "@/components/acts/Meme";
 
 import { RansomText, hash } from "@/components/acts/RansomText";
 
@@ -231,10 +232,14 @@ function JarStage({ preds, onEmpty }: { preds: Prediction[]; onEmpty: () => void
       <Doodles seed="act6-jar" count={12} kinds={["heart", "sparkle", "flower", "cloud", "star", "swirl"]} />
       <PeekCat cat="cat-cupcake" edge="bottom-left" size={120} delay={1} />
       <PeekCat cat="cat-kitten-cupcake" edge="right" top="22%" size={105} delay={1.6} />
+      {/* «ЖИТЬ ЭТО КРУТО» — прислонён к баночке */}
+      <div className="relative w-full">
+        <Meme id="meme-zhit" className="-left-4 -top-6 w-[46%] max-w-[200px]" rot={-7} delay={1.2} />
+      </div>
       <motion.button
         onClick={pull}
         aria-label="jar"
-        className="w-[80%]"
+        className="mt-16 w-[80%]"
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         whileTap={{ scale: 0.97 }}
@@ -298,10 +303,11 @@ function Ending() {
   return (
     <div className="relative grid min-h-dvh place-items-center bg-[radial-gradient(circle_at_50%_35%,#ffffff_0%,#fde4ec_45%,#f9c5d5_100%)] px-7">
       <Doodles seed="act6-end" count={14} kinds={["heart", "star", "sparkle", "crown", "flower", "smile"]} />
-      <PeekCat cat="cat-cake" edge="bottom-left" size={130} delay={2.5} />
-      <PeekCat cat="cat-kitten-cake" edge="bottom-right" size={130} delay={3} />
-      <PeekCat cat="cat-clown" edge="left" top="12%" size={105} delay={3.6} />
-      <PeekCat cat="cat-tongue" edge="right" top="16%" size={105} delay={4.1} />
+      {/* котики в костюмах еды выглядывают со всех сторон */}
+      <PeekCat cat="meme-strawberry" edge="bottom-left" size={115} delay={2.5} />
+      <PeekCat cat="meme-waffle" edge="bottom-right" size={125} delay={3} />
+      <PeekCat cat="meme-banana" edge="left" top="12%" size={80} delay={3.6} />
+      <PeekCat cat="meme-avocado" edge="right" top="16%" size={95} delay={4.1} />
       <p className="relative z-10 text-balance text-center font-display text-[2rem] font-bold leading-snug text-rose-ink">
         {words.map((w, i) => (
           <span key={i}>

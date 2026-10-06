@@ -17,6 +17,7 @@ import { assetUrl, ASSETS } from "@/content/assets";
 import { ActShell } from "@/components/acts/ActShell";
 import { Doodles } from "@/components/acts/Doodles";
 import { PeekCat } from "@/components/acts/PeekCat";
+import { Meme } from "@/components/acts/Meme";
 
 import { RansomText, hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
@@ -26,6 +27,10 @@ const MAX_PER_ROUND = 12; // чтобы викторина не растянул
 
 type Q = { id: string; round: 1 | 2; text: string; answer: string; options: string[] };
 type Stage = { kind: "intro"; round: 1 | 2 } | { kind: "question"; i: number } | { kind: "score" };
+
+// мемы-реакции: по очереди, чтобы не повторялись подряд
+const YES_MEMES = ["meme-bro", "meme-smugcats", "meme-hehe"];
+const NO_MEMES = ["meme-niche", "meme-beda", "meme-nothehe", "meme-crycats", "meme-nailgirl"];
 
 const PAPERS = ["note-kraft", "note-grid", "note-clip", "note-crumpled"];
 const PAPER_PAD: Record<string, string> = {
@@ -59,6 +64,8 @@ export default function Act5() {
   const [stage, setStage] = useState<Stage>({ kind: "intro", round: 1 });
   const [picked, setPicked] = useState<string | null>(null);
   const [score, setScore] = useState(0);
+  const [reacts, setReacts] = useState({ yes: 0, no: 0 }); // сколько раз уже реагировали
+  const [meme, setMeme] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -88,7 +95,10 @@ export default function Act5() {
   const choose = (opt: string) => {
     if (!q || picked) return;
     setPicked(opt);
-    if (opt === q.answer) {
+    const ok = opt === q.answer;
+    setMeme(ok ? YES_MEMES[reacts.yes % YES_MEMES.length] : NO_MEMES[reacts.no % NO_MEMES.length]);
+    setReacts((r) => (ok ? { ...r, yes: r.yes + 1 } : { ...r, no: r.no + 1 }));
+    if (ok) {
       setScore((s) => s + 1);
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 }, colors: ["#f9c5d5", "#e88aa8", "#fff3e3", "#f6cf7a"], disableForReducedMotion: true });
     }
@@ -232,13 +242,21 @@ export default function Act5() {
                       <p className={cn("text-center font-hand text-[2rem] font-bold leading-none", picked === q.answer ? "text-pink-deep" : "text-[#c2405d]")}>
                         {picked === q.answer ? t.correct : q.round === 1 ? `${t.wrongWho} ${q.answer}` : t.wrong}
                       </p>
-                      <button
-                        onClick={next}
-                        aria-label="next"
-                        className="grid size-14 place-items-center rounded-full bg-pink-deep text-white shadow-[0_5px_0_#c9688a] active:translate-y-0.5"
-                      >
-                        <ArrowRight className="size-6" />
-                      </button>
+                      <div className="flex items-center gap-5">
+                        {/* мем-реакция рядом с кнопкой */}
+                        {meme && (
+                          <div className="relative h-28 w-36">
+                            <Meme key={meme + stage.kind} id={meme} className="inset-x-0 top-1/2 -translate-y-1/2" rot={picked === q.answer ? 5 : -5} delay={0.15} />
+                          </div>
+                        )}
+                        <button
+                          onClick={next}
+                          aria-label="next"
+                          className="grid size-14 place-items-center rounded-full bg-pink-deep text-white shadow-[0_5px_0_#c9688a] active:translate-y-0.5"
+                        >
+                          <ArrowRight className="size-6" />
+                        </button>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -257,6 +275,9 @@ export default function Act5() {
             >
               {qs.length > 0 && (
                 <>
+                  <div className="relative h-36 w-52">
+                    <Meme id="meme-unicorn" className="inset-0" rot={-4} delay={0.6} />
+                  </div>
                   <RansomText text={t.score} size={34} />
                   <RansomText text={`${score} / ${qs.length}`} size={64} />
                 </>
