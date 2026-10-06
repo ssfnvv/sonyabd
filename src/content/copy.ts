@@ -87,6 +87,11 @@ export const copy = {
     next: "дальше",
   },
 
+  act4: {
+    incoming: "входящий",
+    next: "дальше",
+  },
+
   admin: {
     // Админку видишь только ты, тексты служебные
     passwordPlaceholder: "Пароль",

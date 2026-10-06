@@ -32,6 +32,77 @@ export function unlockAudio() {
   src.start(0);
 }
 
+// Звонок старого телефона: два «колокольчика» с быстрой дрожью, ~1.4 секунды
+export function playRing() {
+  const c = getAudioContext();
+  if (c.state === "suspended") c.resume();
+  const now = c.currentTime;
+  const dur = 1.4;
+  const out = c.createGain();
+  out.gain.setValueAtTime(0, now);
+  out.gain.linearRampToValueAtTime(0.16, now + 0.02);
+  out.gain.setValueAtTime(0.16, now + dur - 0.1);
+  out.gain.linearRampToValueAtTime(0, now + dur);
+  out.connect(c.destination);
+  // дрожь молоточка между чашками звонка
+  const trem = c.createGain();
+  trem.gain.value = 0.5;
+  const lfo = c.createOscillator();
+  lfo.frequency.value = 22;
+  const lfoGain = c.createGain();
+  lfoGain.gain.value = 0.5;
+  lfo.connect(lfoGain).connect(trem.gain);
+  trem.connect(out);
+  for (const f of [1046, 1318, 2093]) {
+    const o = c.createOscillator();
+    o.type = f > 2000 ? "sine" : "triangle";
+    o.frequency.value = f;
+    const g = c.createGain();
+    g.gain.value = f > 2000 ? 0.15 : 0.5;
+    o.connect(g).connect(trem);
+    o.start(now);
+    o.stop(now + dur);
+  }
+  lfo.start(now);
+  lfo.stop(now + dur);
+}
+
+// Короткий «клик» трубки
+export function playClick() {
+  const c = getAudioContext();
+  const now = c.currentTime;
+  const b = c.createBuffer(1, Math.floor(c.sampleRate * 0.05), c.sampleRate);
+  const d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) ** 3 * 0.6;
+  const s = c.createBufferSource();
+  s.buffer = b;
+  s.connect(c.destination);
+  s.start(now);
+}
+
+// Проиграть один буфер; возвращает функцию остановки
+export function playBuffer(buf: AudioBuffer, onEnded?: () => void): () => void {
+  const c = getAudioContext();
+  if (c.state === "suspended") c.resume();
+  const s = c.createBufferSource();
+  s.buffer = buf;
+  s.connect(c.destination);
+  let stopped = false;
+  s.onended = () => {
+    if (!stopped) onEnded?.();
+  };
+  s.start();
+  return () => {
+    stopped = true;
+    try {
+      s.stop();
+    } catch {
+      /* уже остановлен */
+    }
+    s.disconnect();
+  };
+}
+
 // «Дзынь»: синтезируем колокольчик, без аудиофайлов
 export function playDing() {
   const c = getAudioContext();
