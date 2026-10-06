@@ -31,6 +31,7 @@ const GROUP_WIDTH: Record<AssetGroup, number> = {
   clip: 0.24,
   cat: 0.36,
   lace: 1.05,
+  decor: 0.5,
 };
 
 export function baseWidth(e: Pick<CardElement, "kind" | "src">): number {

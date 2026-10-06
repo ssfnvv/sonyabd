@@ -17,7 +17,8 @@ import { ActShell } from "@/components/acts/ActShell";
 import { Doodles } from "@/components/acts/Doodles";
 import { PeekCat } from "@/components/acts/PeekCat";
 
-import { RotaryPhone } from "@/components/acts/RotaryPhone";
+import { PhotoPhone } from "@/components/acts/PhotoPhone";
+import { assetUrl } from "@/content/assets";
 import { hash } from "@/components/acts/RansomText";
 import { cn } from "@/components/ui";
 
@@ -153,37 +154,22 @@ export default function Act4() {
                 {showCaller && (
                   <motion.div
                     key={call.id}
-                    className="rotate-[-3deg] bg-[#fff3a8] px-6 pb-4 pt-3 text-center shadow-[0_8px_14px_-6px_rgba(90,60,20,.4)]"
-                    style={{ clipPath: "polygon(0 3%, 100% 0, 98% 100%, 2% 97%)" }}
-                    initial={{ y: -30, opacity: 0, rotate: -12 }}
-                    animate={{ y: 0, opacity: 1, rotate: -3 }}
+                    className="relative flex w-72 flex-col items-center justify-center px-8 pb-6 pt-3 text-center drop-shadow-[0_8px_10px_rgba(150,60,90,.25)]"
+                    style={{ backgroundImage: `url(${assetUrl("felt-bubble")})`, backgroundSize: "100% 100%", aspectRatio: "1000 / 409" }}
+                    initial={{ y: -30, opacity: 0, rotate: -12, scale: 0.8 }}
+                    animate={{ y: 0, opacity: 1, rotate: -3, scale: 1 }}
                     exit={{ y: 20, opacity: 0, rotate: 6 }}
-                    transition={{ type: "spring", damping: 13 }}
+                    transition={{ type: "spring", damping: 12 }}
                   >
-                    <p className="font-hand text-xl font-bold leading-none text-[#8a6d3b]">{t.incoming}</p>
-                    <p className="mt-1 font-hand text-[2.6rem] font-bold leading-none text-rose-ink">{call.name}</p>
+                    <p className="font-hand text-xl font-bold leading-none text-[#b2557a]">{t.incoming}</p>
+                    <p className="mt-1 max-w-full truncate font-hand text-[2.4rem] font-bold leading-none text-rose-ink">{call.name}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            <div className="relative w-[88%]">
-              <RotaryPhone state={phase === "talking" ? "talking" : phase === "ringing" ? "ringing" : "idle"} onHandset={onHandset} />
-
-              {/* звуковые волны во время разговора */}
-              {phase === "talking" && (
-                <div className="pointer-events-none absolute left-[18%] top-[6%]">
-                  {[0, 1, 2].map((i) => (
-                    <motion.span
-                      key={i}
-                      className="absolute size-10 rounded-full border-2 border-pink-deep"
-                      initial={{ scale: 0.4, opacity: 0.8 }}
-                      animate={{ scale: 2.2, opacity: 0 }}
-                      transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.5 }}
-                    />
-                  ))}
-                </div>
-              )}
+            <div className="relative w-[86%]">
+              <PhotoPhone state={phase === "talking" ? "talking" : phase === "ringing" ? "ringing" : "idle"} onTap={onHandset} />
             </div>
 
             {/* «отклонить» — убегает */}

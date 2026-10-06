@@ -2,7 +2,7 @@
 // Размеры и окошки рамок посчитаны скриптом нарезки и сохранены в assets.json.
 import raw from "./assets.json";
 
-export type AssetGroup = "frame" | "paper" | "clip" | "cat" | "lace";
+export type AssetGroup = "frame" | "paper" | "clip" | "cat" | "lace" | "decor"; // decor — только для оформления актов, в редакторе не показывается
 export type Asset = {
   id: string;
   group: AssetGroup;

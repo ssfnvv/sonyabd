@@ -512,5 +512,25 @@
   "group": "lace",
   "w": 2400,
   "h": 147
+ },
+ "phone-rotary": {
+  "group": "decor",
+  "w": 1200,
+  "h": 844
+ },
+ "phone-handset": {
+  "group": "decor",
+  "w": 244,
+  "h": 1400
+ },
+ "felt-bubble": {
+  "group": "decor",
+  "w": 1000,
+  "h": 409
+ },
+ "felt-star": {
+  "group": "clip",
+  "w": 600,
+  "h": 600
  }
 }
