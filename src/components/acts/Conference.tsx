@@ -30,7 +30,6 @@ export function Conference({ people, speaking }: { people: Person[]; speaking: n
       <Decor id="meme-dog" className="-left-5 -top-10 w-20" rot={-10} />
       <Decor id="bow-halftone" className="-right-4 -top-8 w-20" rot={14} delay={0.3} />
       <Decor id="tulips" className="-bottom-10 -left-8 w-28" rot={-8} delay={0.6} />
-      <Decor id="meme-shrek" className="-bottom-14 -right-5 w-24" rot={6} delay={0.9} />
 
       <div className="grid grid-cols-2 gap-x-3 gap-y-6">
         {people.map((p, i) => {

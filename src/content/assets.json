@@ -753,11 +753,6 @@
   "w": 312,
   "h": 346
  },
- "meme-shrek": {
-  "group": "decor",
-  "w": 388,
-  "h": 488
- },
  "meme-rosecat": {
   "group": "decor",
   "w": 430,
@@ -777,26 +772,6 @@
   "group": "decor",
   "w": 332,
   "h": 434
- },
- "meme-strawberry": {
-  "group": "decor",
-  "w": 244,
-  "h": 340
- },
- "meme-banana": {
-  "group": "decor",
-  "w": 168,
-  "h": 355
- },
- "meme-avocado": {
-  "group": "decor",
-  "w": 244,
-  "h": 324
- },
- "meme-waffle": {
-  "group": "decor",
-  "w": 328,
-  "h": 310
  },
  "meme-roblox": {
   "group": "decor",
@@ -842,16 +817,6 @@
   "group": "decor",
   "w": 640,
   "h": 407
- },
- "meme-romance": {
-  "group": "decor",
-  "w": 640,
-  "h": 481
- },
- "meme-playlist": {
-  "group": "decor",
-  "w": 640,
-  "h": 521
  },
  "meme-flowercat": {
   "group": "decor",

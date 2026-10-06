@@ -201,7 +201,6 @@ export default function Act3() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={tape} alt="" className="pointer-events-none absolute -top-4 left-[8%] z-10 w-[34%] -rotate-[8deg]" />
               )}
-              <Meme id="meme-playlist" className="-right-6 -top-14 z-20 w-[46%] max-w-[200px]" rot={7} delay={0.6} />
               {/* тетрадный листок: линейки и поля рисуются CSS — растягивается под любое число имён */}
               <ol
                 className="notebook-page relative py-6 pl-14 pr-5"

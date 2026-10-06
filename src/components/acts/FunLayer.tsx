@@ -123,7 +123,7 @@ function Walker({ w, onDone }: { w: Walk; onDone: () => void }) {
 }
 
 // ---------- мем-гость: изредка выглядывает сбоку, кивает и прячется ----------
-const PEEK_MEMES = ["meme-dog", "meme-shrek", "meme-rosecat", "meme-roblox", "meme-banana", "meme-avocado", "meme-happymeal"];
+const PEEK_MEMES = ["meme-dog", "meme-rosecat", "meme-roblox", "meme-happymeal"];
 type MemePeekT = { id: number; meme: string; side: 1 | -1; top: number };
 
 function MemePeek({ p, onDone }: { p: MemePeekT; onDone: () => void }) {

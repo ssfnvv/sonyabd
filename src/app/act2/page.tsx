@@ -21,7 +21,6 @@ import { ActShell } from "@/components/acts/ActShell";
 import { PeekCat } from "@/components/acts/PeekCat";
 import { hash } from "@/components/acts/RansomText";
 import { Marker, type MarkerKind } from "@/components/acts/Marker";
-import { Meme } from "@/components/acts/Meme";
 
 const t = copy.act2;
 const YEAR_MIN_PEOPLE = 3;
@@ -109,15 +108,12 @@ export default function Act2() {
         {cards !== null && tiles.length > 0 && (
           // постер в серебряной рамке
           <motion.div
-            className="relative w-full rounded-[6px] p-[10px] shadow-[0_20px_40px_-18px_rgba(60,30,50,.5)]"
+            className="w-full rounded-[6px] p-[10px] shadow-[0_20px_40px_-18px_rgba(60,30,50,.5)]"
             style={{ background: "linear-gradient(135deg,#f4f4f6 0%,#b9bcc4 22%,#eceef2 45%,#a7abb4 70%,#e7e9ee 100%)" }}
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: "spring", damping: 18 }}
           >
-            {/* мемы, «прилепленные» к углам рамки */}
-            <Meme id="meme-strawberry" className="-right-4 -top-12 w-[24%] max-w-[110px]" rot={12} delay={1.2} />
-            <Meme id="meme-romance" className="-bottom-10 -left-3 z-30 w-[44%] max-w-[210px]" rot={-7} inView />
             <div className="bg-[#fbfbfa] p-[3%] shadow-[inset_0_0_0_1px_rgba(0,0,0,.06),inset_0_2px_6px_rgba(0,0,0,.12)]">
               {segments(tiles).map((seg, si) =>
                 seg.wide ? (
@@ -142,7 +138,7 @@ export default function Act2() {
         {cards !== null && (
           <Link
             href="/act3"
-            className="mt-16 inline-block rounded-full bg-pink-deep px-12 py-4 font-display text-lg font-bold text-white shadow-[0_6px_0_#c9688a] active:translate-y-0.5 active:shadow-[0_3px_0_#c9688a]"
+            className="mt-10 inline-block rounded-full bg-pink-deep px-12 py-4 font-display text-lg font-bold text-white shadow-[0_6px_0_#c9688a] active:translate-y-0.5 active:shadow-[0_3px_0_#c9688a]"
           >
             {t.next}
           </Link>

@@ -11,7 +11,7 @@ import { cn } from "../ui";
 // мемы-карточки (остальные — вырезанные наклейки)
 const CARDS = new Set([
   "meme-ura", "meme-bro", "meme-zhit", "meme-niche", "meme-smugcats", "meme-beda", "meme-unicorn",
-  "meme-crycats", "meme-romance", "meme-playlist", "meme-hehe", "meme-nothehe",
+  "meme-crycats", "meme-hehe", "meme-nothehe",
 ]);
 
 export const isMemeCard = (id: string) => CARDS.has(id);
