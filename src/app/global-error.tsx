@@ -19,7 +19,14 @@ export default function GlobalError({ error, reset }: { error: Error; reset: () 
           >
             ↻
           </button>
-          <p style={{ marginTop: 16, fontSize: 11, color: "#7a3b5299", maxWidth: 320, wordBreak: "break-word" }}>{error?.message}</p>
+          <pre style={{ marginTop: 16, fontSize: 10, color: "#7a3b52aa", maxWidth: 340, whiteSpace: "pre-wrap", wordBreak: "break-all", textAlign: "left" }}>
+            {[
+              error?.message,
+              typeof location !== "undefined" ? location.pathname + location.search : "",
+              typeof navigator !== "undefined" ? navigator.userAgent : "",
+              (error?.stack ?? "").split("\n").slice(0, 6).join("\n"),
+            ].join("\n")}
+          </pre>
         </div>
       </body>
     </html>
