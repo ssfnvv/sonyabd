@@ -103,6 +103,33 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
   const ref = useRef<HTMLVideoElement>(null);
   const [i, setI] = useState(0);
   const [fade, setFade] = useState(false);
+  // заранее скачанные ролики (blob-ссылки): переключение без подгрузки и лагов
+  const blobs = useRef<Record<string, string>>({});
+  const srcFor = useCallback((v: Video) => blobs.current[v.id] ?? srcOf(v), []);
+
+  // качаем все видео по очереди в фоне, начиная с первого — пока Соня смотрит текущее
+  useEffect(() => {
+    let alive = true;
+    const urls: string[] = [];
+    (async () => {
+      for (const v of videos) {
+        if (!alive) break;
+        try {
+          const r = await fetch(srcOf(v));
+          if (!r.ok) continue;
+          const u = URL.createObjectURL(await r.blob());
+          urls.push(u);
+          blobs.current[v.id] = u;
+        } catch {
+          /* не скачалось — будет играть напрямую по ссылке */
+        }
+      }
+    })();
+    return () => {
+      alive = false;
+      urls.forEach((u) => URL.revokeObjectURL(u));
+    };
+  }, [videos]);
 
   const next = useCallback(() => {
     setFade(true);
@@ -115,26 +142,28 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
         }
         return n + 1;
       });
-    }, 450);
+    }, 250);
   }, [videos.length, onEnd]);
 
   // смена ролика: тот же <video>, новый src — так iPhone не просит нажимать «play» заново
   useEffect(() => {
     const v = ref.current;
     if (!v || !started) return;
-    v.src = srcOf(videos[i]);
+    const want = srcFor(videos[i]);
+    // первый ролик уже запущен из нажатия — не перезапускаем его
+    if (v.src !== new URL(want, location.href).href && !(i === 0 && v.currentTime > 0)) v.src = want;
     v.play().catch(() => {
       /* если браузер не дал запустить — пропускаем ролик */
       next();
     });
-  }, [i, started, videos, next]);
+  }, [i, started, videos, next, srcFor]);
 
   const start = () => {
     unlockAudio();
     const v = ref.current;
     if (v) {
       // запуск прямо в обработчике нажатия — обязательно для iPhone
-      v.src = srcOf(videos[0]);
+      v.src = srcFor(videos[0]);
       v.play().catch(() => {});
     }
     onStart();
