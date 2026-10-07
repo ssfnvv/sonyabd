@@ -27,6 +27,7 @@ const visible = (els: CardElement[]) => els.filter((e) => !HIDDEN_ON_POSTER.has(
 
 // детские фото Сони в начале постера (лежат в /public/childhood)
 const CHILDHOOD_CAPTION = "когда-то давным-давно";
+const ENDING_CAPTION = "продолжение следует";
 const CHILDHOOD = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ src: `/childhood/${n}.jpg`, big: n === 1 || n === 5 }));
 
 const SERIF = '"PT Serif", Georgia, serif';
@@ -142,6 +143,16 @@ export function Poster({ cards }: { cards: Card[] }) {
               <Block key={it.key} card={it.card} i={it.i} big={it.big} onOpen={() => setOpen(it.card)} />
             ),
           )}
+          {/* завершающая газетная подпись */}
+          <motion.div
+            className="col-span-2 flex justify-center pb-2 pt-4"
+            initial={{ opacity: 0, scale: 1.2, rotate: 4 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 1.5 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", damping: 11 }}
+          >
+            <RansomText text={ENDING_CAPTION} size={22} className="max-w-full" />
+          </motion.div>
         </div>
       </motion.div>
 
