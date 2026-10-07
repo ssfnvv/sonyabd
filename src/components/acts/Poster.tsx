@@ -27,7 +27,7 @@ const visible = (els: CardElement[]) => els.filter((e) => !HIDDEN_ON_POSTER.has(
 
 // детские фото Сони в начале постера (лежат в /public/childhood)
 const CHILDHOOD_CAPTION = "когда-то давным-давно";
-const ENDING_CAPTION = "продолжение следует";
+const ENDING_CAPTION = "впереди ещё столько всего!";
 const CHILDHOOD = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ src: `/childhood/${n}.jpg`, big: n === 1 || n === 5 }));
 
 const SERIF = '"PT Serif", Georgia, serif';
