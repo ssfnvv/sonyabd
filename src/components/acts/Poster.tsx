@@ -25,6 +25,10 @@ const YEAR_MAX_SHOWN = 4;
 const HIDDEN_ON_POSTER = new Set(["paperclip-pink"]);
 const visible = (els: CardElement[]) => els.filter((e) => !HIDDEN_ON_POSTER.has(e.src));
 
+// детские фото Сони в начале постера (лежат в /public/childhood)
+const CHILDHOOD_CAPTION = "когда-то давным-давно";
+const CHILDHOOD = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ src: `/childhood/${n}.jpg`, big: n === 1 || n === 5 }));
+
 const SERIF = '"PT Serif", Georgia, serif';
 
 export type Card = { id: string; year: number; story: string; elements: CardElement[]; name: string };
@@ -98,6 +102,29 @@ export function Poster({ cards }: { cards: Card[] }) {
         transition={{ type: "spring", damping: 18 }}
       >
         <div className="grid grid-flow-row-dense grid-cols-2 gap-x-3 gap-y-5 bg-[#fbfbfa] p-[4%] shadow-[inset_0_0_0_1px_rgba(0,0,0,.06),inset_0_2px_6px_rgba(0,0,0,.12)]">
+          {/* начало постера: детские фото Сони и газетная подпись */}
+          <motion.div
+            className="col-span-2 flex justify-center pb-1 pt-2"
+            initial={{ opacity: 0, scale: 1.2, rotate: -4 }}
+            animate={{ opacity: 1, scale: 1, rotate: -1.5 }}
+            transition={{ type: "spring", damping: 11, delay: 0.3 }}
+          >
+            <RansomText text={CHILDHOOD_CAPTION} size={30} />
+          </motion.div>
+          {CHILDHOOD.map((ph, k) => (
+            <motion.div
+              key={ph.src}
+              className={`bg-white p-[5px] pb-[14px] shadow-[0_6px_12px_-6px_rgba(60,30,50,.45)] ${ph.big ? "col-span-2 mx-[6%]" : ""}`}
+              style={{ rotate: `${(hash(ph.src) - 0.5) * 5}deg` }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: (k % 2) * 0.08 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={ph.src} alt="" loading="lazy" className={`w-full object-cover ${ph.big ? "" : "aspect-square"}`} />
+            </motion.div>
+          ))}
           {items.map((it) =>
             it.kind === "year" ? (
               // год — цифрами, вырезанными из газет и журналов
