@@ -50,7 +50,9 @@ export default function Act4() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [c, f] = await Promise.all([fetchClips("call"), fetchClips("final")]);
+      // созвон убран из подарка — грузим только личные звонки
+      const c = await fetchClips("call");
+      const f: MixClip[] = [];
       if (cancelled) return;
       setCalls(c);
       setFinals(f);

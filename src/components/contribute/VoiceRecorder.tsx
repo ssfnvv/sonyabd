@@ -26,7 +26,8 @@ export function VoiceRecorder({ friend, onBack, onDone }: { friend: Friend; onBa
     return (
       <Screen title={t.sections.voice} onBack={onBack} backLabel={t.back}>
         <AboutNote text={t.about.voice} cat={TASK_CATS.voice} />
-        {(Object.keys(LIMITS) as AudioType[]).map((k) => {
+        {/* «созвон» убран: его никто не записал, в подарке его тоже нет */}
+        {(Object.keys(LIMITS) as AudioType[]).filter((k) => k !== "final").map((k) => {
           const Icon = ICONS[k];
           return (
             <button

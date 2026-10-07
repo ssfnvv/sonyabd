@@ -28,7 +28,7 @@ type QuizData = {
   round2: { id: string; text: string; answer: string }[];
 };
 
-const VOICE_TYPES = ["diary", "call", "final"] as const;
+const VOICE_TYPES = ["diary", "call"] as const;
 
 const getJson = <T,>(url: string, fallback: T): Promise<T> =>
   fetch(url)
@@ -56,16 +56,15 @@ export default function Archive() {
     if (!open) return;
     (async () => {
       const audio = (tp: string) => getJson<Audio[]>(`/api/public/audios?type=${tp}`, []);
-      const [c, d, cl, f, q, fin] = await Promise.all([
+      const [c, d, cl, q, fin] = await Promise.all([
         getJson<Card[]>("/api/public/timeline", []),
         audio("diary"),
         audio("call"),
-        audio("final"),
         getJson<QuizData>("/api/public/quiz", { round1: [], round2: [] }),
         getJson<{ videos: Video[]; predictions: Pred[] }>("/api/public/final", { videos: [], predictions: [] }),
       ]);
       setCards(c);
-      setAudios({ diary: d, call: cl, final: f });
+      setAudios({ diary: d, call: cl });
       setQuiz(q);
       setVideos([...fin.videos, ...SPECIAL_VIDEOS]);
       setPreds(fin.predictions);
