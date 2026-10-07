@@ -109,7 +109,7 @@ export function Poster({ cards }: { cards: Card[] }) {
             animate={{ opacity: 1, scale: 1, rotate: -1.5 }}
             transition={{ type: "spring", damping: 11, delay: 0.3 }}
           >
-            <RansomText text={CHILDHOOD_CAPTION} size={30} />
+            <RansomText text={CHILDHOOD_CAPTION} size={22} className="max-w-full" />
           </motion.div>
           {CHILDHOOD.map((ph, k) => (
             <motion.div
