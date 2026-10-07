@@ -23,6 +23,9 @@ import { Meme } from "@/components/acts/Meme";
 
 import { RansomText, hash } from "@/components/acts/RansomText";
 import { SPECIAL_VIDEOS } from "@/content/special";
+import { assetUrl, ASSETS } from "@/content/assets";
+import { Marker } from "@/components/acts/Marker";
+import { cn } from "@/components/ui";
 
 const t = copy.act6;
 type Video = { id: string; path: string; mime: string; name: string; src?: string };
@@ -138,20 +141,41 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
   };
 
   const cur = videos[i];
+  // особое видео (лучшей подруги): кино «расцветает» в розовый скрапбук, видео — в полароиде
+  const special = started && !!cur?.src;
+  const tape = ASSETS["tape"] ? assetUrl("tape") : null;
   return (
-    <div className="relative flex min-h-dvh flex-col items-center justify-center bg-black">
-      {/* кинополосы */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-10 h-[9dvh] bg-black" />
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-10 h-[9dvh] bg-black" />
+    <div className={cn("relative flex min-h-dvh flex-col items-center justify-center transition-colors duration-700", special ? "scrap-desk" : "bg-black")}>
+      {special && (
+        <>
+          <Doodles seed="act6-special" count={12} kinds={["heart", "sparkle", "star", "flower", "swirl", "crown"]} />
+          <PeekCat cat="cat-kitten-cake" edge="bottom-left" size={110} delay={1.2} />
+          <PeekCat cat="cat-wink" edge="right" top="14%" size={95} delay={1.8} />
+        </>
+      )}
+      {/* кинополосы (на особом видео уезжают) */}
+      <div className={cn("pointer-events-none fixed inset-x-0 top-0 z-10 h-[9dvh] bg-black transition-transform duration-700", special && "-translate-y-full")} />
+      <div className={cn("pointer-events-none fixed inset-x-0 bottom-0 z-10 h-[9dvh] bg-black transition-transform duration-700", special && "translate-y-full")} />
 
-      <div className="relative w-full">
+      <motion.div
+        className={cn("relative", special ? "w-[76%] max-w-[340px] bg-white p-[10px] pb-0 shadow-[0_22px_40px_-14px_rgba(90,30,50,.55)]" : "w-full")}
+        animate={special ? { rotate: -2.5, scale: 1 } : { rotate: 0, scale: 1 }}
+        initial={false}
+        transition={{ type: "spring", damping: 14 }}
+      >
+        {special && tape && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={tape} alt="" className="pointer-events-none absolute -top-5 left-1/2 z-10 w-[46%] -translate-x-1/2 rotate-[3deg]" />
+        )}
+        {special && <Marker kind="heart" className="-right-7 -top-7 z-10" size={52} rotate={14} />}
+        {special && <Marker kind="sparkle2" className="-bottom-8 -left-8 z-10" size={50} rotate={-10} delay={0.4} />}
         <video
           ref={ref}
           playsInline
           preload="auto"
           onEnded={next}
           onError={() => started && next()}
-          className="max-h-[78dvh] w-full bg-black object-contain transition-opacity duration-500"
+          className={cn("w-full bg-black transition-opacity duration-500", special ? "aspect-[9/16] max-h-[64dvh] object-cover" : "max-h-[78dvh] object-contain")}
           style={{ opacity: started && !fade ? 1 : 0 }}
         />
         {/* имя — «от руки» в углу */}
@@ -159,7 +183,12 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
           {started && cur && !fade && (
             <motion.p
               key={cur.id}
-              className="font-hand absolute bottom-4 left-5 text-[2.2rem] font-bold leading-none text-white drop-shadow-[0_2px_6px_rgba(0,0,0,.8)]"
+              className={cn(
+                "font-hand font-bold leading-none",
+                special
+                  ? "py-3 text-center text-[2.4rem] text-rose-ink"
+                  : "absolute bottom-4 left-5 text-[2.2rem] text-white drop-shadow-[0_2px_6px_rgba(0,0,0,.8)]",
+              )}
               initial={{ opacity: 0, x: -14 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
@@ -169,7 +198,9 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
             </motion.p>
           )}
         </AnimatePresence>
-      </div>
+        {/* пока имя не появилось — нижнее поле полароида держит высоту */}
+        {special && fade && <div className="h-[3.9rem]" />}
+      </motion.div>
 
       {!started && (
         <motion.button
@@ -189,10 +220,13 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
           {/* полоска прогресса по роликам */}
           <div className="fixed inset-x-6 top-[calc(9dvh-14px)] z-20 flex gap-1">
             {videos.map((v, k) => (
-              <span key={v.id} className="h-0.5 flex-1 rounded-full" style={{ background: k <= i ? "#f9c5d5" : "rgba(255,255,255,.25)" }} />
+              <span key={v.id} className="h-0.5 flex-1 rounded-full" style={{ background: k <= i ? (special ? "#e88aa8" : "#f9c5d5") : special ? "rgba(122,59,82,.2)" : "rgba(255,255,255,.25)" }} />
             ))}
           </div>
-          <button onClick={next} aria-label="skip" className="fixed bottom-[calc(9dvh+12px)] right-4 z-20 grid size-11 place-items-center rounded-full bg-white/10 text-white/80 active:scale-90">
+          <button onClick={next} aria-label="skip" className={cn(
+              "fixed bottom-[calc(9dvh+12px)] right-4 z-20 grid size-11 place-items-center rounded-full active:scale-90",
+              special ? "bg-white/80 text-rose-ink ring-2 ring-pink" : "bg-white/10 text-white/80",
+            )}>
             <SkipForward className="size-5" />
           </button>
         </>

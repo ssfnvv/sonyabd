@@ -16,7 +16,7 @@ import "@fontsource/playfair-display/cyrillic-700.css";
 import "@fontsource/playfair-display/latin-700.css";
 import { CARD_ASPECT, type CardElement } from "@/lib/media";
 import { CardLayer } from "@/components/CardView";
-import { hash } from "./RansomText";
+import { hash, RansomText } from "./RansomText";
 import { Marker, type MarkerKind } from "./Marker";
 
 const YEAR_MIN_PEOPLE = 3;
@@ -25,7 +25,7 @@ const SERIF = '"PT Serif", Georgia, serif';
 
 export type Card = { id: string; year: number; story: string; elements: CardElement[]; name: string };
 
-type Item = { kind: "year"; key: string; year: number } | { kind: "card"; key: string; card: Card; i: number };
+type Item = { kind: "year"; key: string; year: number } | { kind: "card"; key: string; card: Card; i: number; big: boolean };
 
 const DOODLES: MarkerKind[] = ["tick", "sparkle2", "star", "heart", "burst", "arrow"];
 
@@ -47,8 +47,27 @@ function buildItems(cards: Card[]): Item[] {
       shown.add(card.year);
       out.push({ kind: "year", key: `y${card.year}`, year: card.year });
     }
-    out.push({ kind: "card", key: card.id, card, i });
+    out.push({ kind: "card", key: card.id, card, i, big: false });
   });
+
+  // Размеры: часть карточек — крупные, на всю ширину, остальные — по две в ряд.
+  // Считаем по участкам между годами, чтобы в рядах не оставалось пустых клеток.
+  let run: Extract<Item, { kind: "card" }>[] = [];
+  const flush = () => {
+    run.forEach((it, k) => {
+      // ритм «крупная, две пары мелких»: мелкие всегда идут парами, рядом с ними нет пустых клеток
+      it.big = run.length >= 3 && k % 5 === 0;
+    });
+    // если мелких нечётное число — последнюю мелкую делаем крупной, чтобы ряд не остался с дыркой
+    const small = run.filter((it) => !it.big);
+    if (small.length % 2 === 1) small[small.length - 1].big = true;
+    run = [];
+  };
+  out.forEach((it) => {
+    if (it.kind === "year") flush();
+    else run.push(it);
+  });
+  flush();
   return out;
 }
 
@@ -74,24 +93,22 @@ export function Poster({ cards }: { cards: Card[] }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", damping: 18 }}
       >
-        <div className="grid grid-cols-2 gap-x-3 gap-y-5 bg-[#fbfbfa] p-[4%] shadow-[inset_0_0_0_1px_rgba(0,0,0,.06),inset_0_2px_6px_rgba(0,0,0,.12)]">
+        <div className="grid grid-flow-row-dense grid-cols-2 gap-x-3 gap-y-5 bg-[#fbfbfa] p-[4%] shadow-[inset_0_0_0_1px_rgba(0,0,0,.06),inset_0_2px_6px_rgba(0,0,0,.12)]">
           {items.map((it) =>
             it.kind === "year" ? (
+              // год — цифрами, вырезанными из газет и журналов
               <motion.div
                 key={it.key}
-                className="col-span-2 flex items-center gap-3"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                className="col-span-2 flex items-center justify-center py-2"
+                initial={{ opacity: 0, scale: 1.3, rotate: -6 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: (hash(it.key) - 0.5) * 6 }}
                 viewport={{ once: true }}
+                transition={{ type: "spring", damping: 11 }}
               >
-                <span className="h-px flex-1 bg-[#1d1b1c]/25" />
-                <span className="text-[clamp(3rem,15vw,5.5rem)] font-bold leading-none tracking-tight text-[#1d1b1c]" style={{ fontFamily: '"Playfair Display", serif' }}>
-                  {it.year}
-                </span>
-                <span className="h-px flex-1 bg-[#1d1b1c]/25" />
+                <RansomText text={String(it.year)} size={52} />
               </motion.div>
             ) : (
-              <Block key={it.key} card={it.card} i={it.i} onOpen={() => setOpen(it.card)} />
+              <Block key={it.key} card={it.card} i={it.i} big={it.big} onOpen={() => setOpen(it.card)} />
             ),
           )}
         </div>
@@ -105,14 +122,14 @@ export function Poster({ cards }: { cards: Card[] }) {
 }
 
 // карточка друга в сетке: сама карточка + имя + начало истории
-function Block({ card, i, onOpen }: { card: Card; i: number; onOpen: () => void }) {
+function Block({ card, i, big, onOpen }: { card: Card; i: number; big: boolean; onOpen: () => void }) {
   const tilt = (hash(card.id + "t") - 0.5) * 3;
   const doodle = i % 4 === 1 ? DOODLES[i % DOODLES.length] : undefined;
   return (
     <motion.button
       type="button"
       onClick={onOpen}
-      className="relative flex min-w-0 flex-col text-left"
+      className={`relative flex min-w-0 flex-col text-left ${big ? "col-span-2 px-[6%]" : ""}`}
       initial={{ opacity: 0, y: 20, scale: 0.96 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-5% 0px" }}
@@ -124,12 +141,14 @@ function Block({ card, i, onOpen }: { card: Card; i: number; onOpen: () => void 
       </div>
       {doodle && <Marker kind={doodle} className="-left-3 -top-4 z-10" size={36} rotate={-12} />}
       {card.name && (
-        <p className="mt-2 truncate text-[13px] italic text-[#b0283f]" style={{ fontFamily: SERIF }}>
+        <p className={`mt-2 truncate italic ${big ? "text-[15px]" : "text-[13px]"} text-[#b0283f]`} style={{ fontFamily: SERIF }}>
           — {card.name}
         </p>
       )}
       {card.story && (
-        <p className="mt-0.5 line-clamp-3 whitespace-pre-wrap text-[12px] leading-[1.3] text-[#1d1b1c]" style={{ fontFamily: SERIF }}>
+        <p className={`mt-0.5 whitespace-pre-wrap leading-[1.3] ${big ? "line-clamp-4 text-[14px]" : "line-clamp-3 text-[12px]"} text-[#1d1b1c]`}
+          style={{ fontFamily: SERIF }}
+        >
           {card.story}
         </p>
       )}
