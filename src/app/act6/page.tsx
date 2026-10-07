@@ -22,9 +22,10 @@ import { PeekCat } from "@/components/acts/PeekCat";
 import { Meme } from "@/components/acts/Meme";
 
 import { RansomText, hash } from "@/components/acts/RansomText";
+import { SPECIAL_VIDEOS } from "@/content/special";
 
 const t = copy.act6;
-type Video = { id: string; path: string; mime: string; name: string };
+type Video = { id: string; path: string; mime: string; name: string; src?: string };
 type Prediction = { id: string; text: string; name: string };
 type Stage = "loading" | "trailer-ready" | "trailer" | "trailer-end" | "jar" | "ending";
 
@@ -44,9 +45,10 @@ export default function Act6() {
       } catch {
         /* покажем то, что есть */
       }
-      setVideos(shuffle(data.videos));
+      // особое видео лучшей подруги — всегда последним
+      setVideos([...shuffle(data.videos), ...SPECIAL_VIDEOS.map((v) => ({ id: v.id, path: "", mime: "video/mp4", name: v.name, src: v.src }))]);
       setPreds(shuffle(data.predictions));
-      setStage(data.videos.length ? "trailer-ready" : data.predictions.length ? "jar" : "ending");
+      setStage(data.videos.length + SPECIAL_VIDEOS.length ? "trailer-ready" : data.predictions.length ? "jar" : "ending");
     })();
   }, []);
 
@@ -200,7 +202,7 @@ function Trailer({ videos, started, onStart, onEnd }: { videos: Video[]; started
 }
 
 function srcOf(v: Video) {
-  return mediaUrl(v.path);
+  return v.src ?? mediaUrl(v.path);
 }
 
 // ---------- баночка с предсказаниями ----------
