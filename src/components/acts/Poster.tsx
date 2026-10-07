@@ -27,6 +27,7 @@ const visible = (els: CardElement[]) => els.filter((e) => !HIDDEN_ON_POSTER.has(
 
 // детские фото Сони в начале постера (лежат в /public/childhood)
 const CHILDHOOD_CAPTION = "когда-то давным-давно";
+const FRIENDS_CAPTION = "а теперь глазами друзей";
 const ENDING_CAPTION = "впереди ещё столько всего!";
 const CHILDHOOD = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ src: `/childhood/${n}.jpg`, big: n === 1 || n === 5 }));
 
@@ -126,6 +127,16 @@ export function Poster({ cards }: { cards: Card[] }) {
               <img src={ph.src} alt="" loading="lazy" className={`w-full object-cover ${ph.big ? "" : "aspect-square"}`} />
             </motion.div>
           ))}
+          {/* переход от детских фото к карточкам друзей */}
+          <motion.div
+            className="col-span-2 flex justify-center pb-1 pt-3"
+            initial={{ opacity: 0, scale: 1.2, rotate: 4 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 1 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", damping: 11 }}
+          >
+            <RansomText text={FRIENDS_CAPTION} size={22} className="max-w-full" />
+          </motion.div>
           {items.map((it) =>
             it.kind === "year" ? (
               // год — цифрами, вырезанными из газет и журналов
