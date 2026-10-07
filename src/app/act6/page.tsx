@@ -282,7 +282,7 @@ function JarStage({ preds, onEmpty }: { preds: Prediction[]; onEmpty: () => void
       setShaking(false);
       setOpen(preds[taken]);
       setTaken((n) => n + 1);
-    }, 700);
+    }, 450);
   };
 
   const close = () => {
@@ -296,15 +296,24 @@ function JarStage({ preds, onEmpty }: { preds: Prediction[]; onEmpty: () => void
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-8 pb-10 pt-20">
       <Doodles seed="act6-jar" count={12} kinds={["heart", "sparkle", "flower", "cloud", "star", "swirl"]} />
       <PeekCat cat="cat-cupcake" edge="bottom-left" size={120} delay={1} />
-      <PeekCat cat="cat-kitten-cupcake" edge="right" top="22%" size={105} delay={1.6} />
+      <PeekCat cat="cat-kitten-cupcake" edge="bottom-right" size={110} delay={1.6} />
+      {/* заголовок газетными буквами */}
+      <motion.div
+        className="mb-4 flex justify-center"
+        initial={{ opacity: 0, scale: 1.2, rotate: -4 }}
+        animate={{ opacity: 1, scale: 1, rotate: -1.5 }}
+        transition={{ type: "spring", damping: 11, delay: 0.3 }}
+      >
+        <RansomText text={t.jarTitle} size={22} className="max-w-full" />
+      </motion.div>
       {/* «ЖИТЬ ЭТО КРУТО» — прислонён к баночке */}
       <div className="relative w-full">
-        <Meme id="meme-zhit" className="-left-4 -top-6 w-[46%] max-w-[200px]" rot={-7} delay={1.2} />
+        <Meme id="meme-zhit" className="-left-6 top-28 w-[36%] max-w-[160px]" rot={-8} delay={1.2} />
       </div>
       <motion.button
         onClick={pull}
         aria-label="jar"
-        className="mt-16 w-[80%]"
+        className="mt-4 w-[80%]"
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         whileTap={{ scale: 0.97 }}
@@ -315,14 +324,14 @@ function JarStage({ preds, onEmpty }: { preds: Prediction[]; onEmpty: () => void
       {/* развёрнутая записка */}
       <AnimatePresence>
         {open && (
-          <motion.div className="fixed inset-0 z-40 grid place-items-center bg-[#3a1f30]/30 px-6 backdrop-blur-[2px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}>
+          <motion.div className="fixed inset-0 z-40 grid place-items-center bg-[#3a1f30]/40 px-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}>
             <motion.div
               className="relative w-full max-w-sm bg-[#fffdf6] px-7 pb-8 pt-9 shadow-[0_20px_40px_-12px_rgba(60,20,40,.5)]"
               style={{ rotate: `${tilt}deg` }}
-              initial={{ y: 160, scaleY: 0.15, scaleX: 0.5, opacity: 0 }}
-              animate={{ y: 0, scaleY: 1, scaleX: 1, opacity: 1 }}
-              exit={{ y: -40, opacity: 0, rotate: tilt + 8 }}
-              transition={{ type: "spring", damping: 15, stiffness: 140 }}
+              initial={{ y: 120, scale: 0.6, opacity: 0 }}
+              animate={{ y: 0, scale: 1, opacity: 1 }}
+              exit={{ y: -30, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 260 }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* сгибы бумаги */}
