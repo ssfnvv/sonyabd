@@ -85,6 +85,30 @@ function buildTiles(cards: Card[]): TileT[] {
   return tiles;
 }
 
+// Примерная высота плитки в долях ширины колонки — чтобы раскладывать по колонкам ровно
+function estHeight(tl: TileT): number {
+  if (tl.kind === "photo") return tl.el.kind === "frame" ? elementAspect(tl.el) * 1.12 : elementAspect(tl.el);
+  if (tl.kind === "card") return CARD_ASPECT;
+  if (tl.kind === "story") {
+    // ~24 знака в строке на телефоне, строка ≈ 0.1 ширины, плюс поля и подпись
+    const lines = tl.story.split("\n").reduce((n, l) => n + Math.max(1, Math.ceil(l.length / 24)), 0);
+    return 0.28 + lines * 0.1;
+  }
+  return 0.4;
+}
+
+// Плитки участка → две колонки: каждую следующую кладём в ту, что ниже
+function toColumns(tiles: TileT[]): [TileT[], TileT[]] {
+  const cols: [TileT[], TileT[]] = [[], []];
+  const h = [0, 0];
+  for (const tl of tiles) {
+    const k = h[0] <= h[1] ? 0 : 1;
+    cols[k].push(tl);
+    h[k] += estHeight(tl) + 0.04;
+  }
+  return cols;
+}
+
 // Режем ленту плиток на участки: подряд идущие обычные → один участок в 2 колонки, широкие — отдельно
 function segments(tiles: TileT[]): { wide: boolean; tiles: TileT[] }[] {
   const out: { wide: boolean; tiles: TileT[] }[] = [];
@@ -130,11 +154,13 @@ export default function Act2() {
                     <Tile tile={seg.tiles[0]} i={si} />
                   </div>
                 ) : (
-                  // колонки сами выравниваются по высоте — без дыр
-                  <div key={si} className="mb-[6px] columns-2 gap-[6px]">
-                    {seg.tiles.map((tile, i) => (
-                      <div key={tile.key} className="mb-[6px] break-inside-avoid">
-                        <Tile tile={tile} i={i} />
+                  // две колонки одной высоты: последняя плитка в каждой дотягивается до низа — без дыр
+                  <div key={si} className="mb-[6px] flex items-stretch gap-[6px]">
+                    {toColumns(seg.tiles).map((col, ci) => (
+                      <div key={ci} className="flex min-w-0 flex-1 flex-col gap-[6px]">
+                        {col.map((tile, i) => (
+                          <Tile key={tile.key} tile={tile} i={i * 2 + ci} grow={i === col.length - 1} />
+                        ))}
                       </div>
                     ))}
                   </div>
@@ -157,8 +183,9 @@ export default function Act2() {
   );
 }
 
-function Tile({ tile, i }: { tile: TileT; i: number }) {
+function Tile({ tile, i, grow }: { tile: TileT; i: number; grow?: boolean }) {
   const style = {};
+  const g = grow ? " flex-auto" : "";
   const appear = {
     initial: { opacity: 0, scale: 0.94 },
     whileInView: { opacity: 1, scale: 1 },
@@ -179,7 +206,7 @@ function Tile({ tile, i }: { tile: TileT; i: number }) {
 
   if (tile.kind === "story")
     return (
-      <motion.div style={style} className="flex flex-col justify-center bg-white px-3 py-3" {...appear}>
+      <motion.div style={style} className={"flex flex-col justify-center bg-white px-3 py-3" + g} {...appear}>
         <p className="whitespace-pre-wrap text-[13px] leading-[1.32] text-[#1d1b1c]" style={{ fontFamily: '"PT Serif", Georgia, serif' }}>
           {tile.story}
         </p>
@@ -193,7 +220,7 @@ function Tile({ tile, i }: { tile: TileT; i: number }) {
 
   if (tile.kind === "card")
     return (
-      <motion.div style={{ ...style, aspectRatio: `1 / ${CARD_ASPECT}` }} className="relative overflow-hidden bg-[#fff6f9]" {...appear}>
+      <motion.div style={{ ...style, aspectRatio: `1 / ${CARD_ASPECT}` }} className={"relative overflow-hidden bg-[#fff6f9]" + g} {...appear}>
         <div className="absolute inset-0">
           <CardLayer elements={tile.card.elements} />
         </div>
@@ -206,7 +233,7 @@ function Tile({ tile, i }: { tile: TileT; i: number }) {
   return (
     <motion.div
       style={{ ...style, aspectRatio: `1 / ${frame ? elementAspect(tile.el) * 1.12 : elementAspect(tile.el)}` }}
-      className={`relative ${frame ? "bg-[#f3f1ee]" : "bg-[#eee]"}`}
+      className={`relative ${frame ? "bg-[#f3f1ee]" : "bg-[#eee]"}${g}`}
       {...appear}
     >
       <div className="absolute inset-0 overflow-hidden">
@@ -224,8 +251,8 @@ function Tile({ tile, i }: { tile: TileT; i: number }) {
       {/* одна наклейка друга, чуть выходит за край фото */}
       {tile.sticker && (
         <motion.div
-          className="pointer-events-none absolute -right-3 -top-4 z-10 w-[34%] max-w-24"
-          style={{ aspectRatio: `1 / ${elementAspect(tile.sticker)}` }}
+          className="pointer-events-none absolute -right-3 -top-4 z-10"
+          style={{ aspectRatio: `1 / ${elementAspect(tile.sticker)}`, width: `min(30%, 5.5rem, ${(4.5 / elementAspect(tile.sticker)).toFixed(2)}rem)` }}
           initial={{ scale: 0, rotate: -30 }}
           whileInView={{ scale: 1, rotate: tile.sticker.rotation || 10 }}
           viewport={{ once: true }}
