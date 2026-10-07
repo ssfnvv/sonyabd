@@ -27,7 +27,7 @@ const visible = (els: CardElement[]) => els.filter((e) => !HIDDEN_ON_POSTER.has(
 
 // детские фото Сони в начале постера (лежат в /public/childhood)
 const CHILDHOOD_CAPTION = "когда-то давным-давно";
-const FRIENDS_CAPTION = "а теперь глазами друзей";
+const FRIENDS_CAPTION = "а потом ещё появились и мы!!!";
 const ENDING_CAPTION = "впереди ещё столько всего!";
 const CHILDHOOD = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ src: `/childhood/${n}.jpg`, big: n === 1 || n === 5 }));
 
