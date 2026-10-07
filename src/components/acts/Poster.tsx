@@ -21,6 +21,10 @@ import { Marker, type MarkerKind } from "./Marker";
 
 const YEAR_MIN_PEOPLE = 3;
 const YEAR_MAX_SHOWN = 4;
+// элементы, которые на постере не показываем (розовая скрепка — по просьбе владелицы)
+const HIDDEN_ON_POSTER = new Set(["paperclip-pink"]);
+const visible = (els: CardElement[]) => els.filter((e) => !HIDDEN_ON_POSTER.has(e.src));
+
 const SERIF = '"PT Serif", Georgia, serif';
 
 export type Card = { id: string; year: number; story: string; elements: CardElement[]; name: string };
@@ -137,7 +141,7 @@ function Block({ card, i, big, onOpen }: { card: Card; i: number; big: boolean; 
       whileTap={{ scale: 0.97 }}
     >
       <div className="relative w-full overflow-hidden shadow-[0_6px_12px_-6px_rgba(60,30,50,.45)]" style={{ ...cardBg, rotate: `${tilt}deg` }}>
-        <CardLayer elements={card.elements} />
+        <CardLayer elements={visible(card.elements)} />
       </div>
       {doodle && <Marker kind={doodle} className="-left-3 -top-4 z-10" size={36} rotate={-12} />}
       {card.name && (
@@ -183,7 +187,7 @@ function Lightbox({ card, onClose }: { card: Card; onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative w-full overflow-hidden" style={cardBg}>
-          <CardLayer elements={card.elements} />
+          <CardLayer elements={visible(card.elements)} />
         </div>
         {card.story && (
           <p className="mt-4 whitespace-pre-wrap px-1 text-[15px] leading-[1.4] text-[#1d1b1c]" style={{ fontFamily: SERIF }}>
